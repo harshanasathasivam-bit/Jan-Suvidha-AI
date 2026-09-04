@@ -1,20 +1,10 @@
-import sqlite3 from 'sqlite3';
-import path from 'path';
-import { fileURLToPath } from 'url';
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-const dbPath = path.join(__dirname, '../db/database.sqlite');
-
-function getDbConnection() {
-  return new sqlite3.Database(dbPath);
-}
+import { getDb } from '../db/getDb.js';
 
 /**
  * Match a profile against seeded Tamil Nadu schemes
  */
 export async function matchProfileToSchemes(profile) {
-  const db = getDbConnection();
+  const db = getDb();
 
   return new Promise((resolve, reject) => {
     db.all(`SELECT * FROM schemes WHERE is_active = 1`, async (err, schemes) => {

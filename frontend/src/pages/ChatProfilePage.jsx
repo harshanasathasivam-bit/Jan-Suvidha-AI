@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { useApp } from '../context/AppContext';
 import { VoiceInput } from '../components/VoiceInput';
 import { Send, UserCheck, Sparkles, ArrowRight, CheckCircle2 } from 'lucide-react';
+import { getApiUrl } from '../utils/api';
 
 export function ChatProfilePage() {
   const { 
@@ -34,7 +35,7 @@ export function ChatProfilePage() {
 
     try {
       // Call backend API /api/profile
-      const res = await fetch('/api/profile', {
+      const res = await fetch(getApiUrl('/api/profile'), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ messages: updatedMessages, currentProfile: profile })

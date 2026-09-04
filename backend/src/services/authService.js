@@ -1,17 +1,8 @@
-import sqlite3 from 'sqlite3';
-import path from 'path';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
-import { fileURLToPath } from 'url';
+import { getDb } from '../db/getDb.js';
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-const dbPath = path.join(__dirname, '../db/database.sqlite');
 const JWT_SECRET = process.env.JWT_SECRET || 'jan_suvidha_secure_jwt_secret_2026_key';
-
-function getDb() {
-  return new sqlite3.Database(dbPath);
-}
 
 // 1. Hash password
 export async function hashPassword(plainPassword) {

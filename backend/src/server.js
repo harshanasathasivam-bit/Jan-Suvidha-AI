@@ -34,9 +34,11 @@ app.use('/api/auth', authRoutes);
 // Mount Profile API Routes (/api/profile/*)
 app.use('/api/profile', profileRoutes);
 
+import { getDb } from './db/getDb.js';
+
 // 1. GET /api/schemes - Fetch seeded database schemes
 app.get('/api/schemes', (req, res) => {
-  const db = new sqlite3.Database(dbPath);
+  const db = getDb();
   db.all(`SELECT * FROM schemes WHERE is_active = 1`, [], (err, schemes) => {
     if (err) {
       db.close();
@@ -141,8 +143,10 @@ if (fs.existsSync(frontendDistPath)) {
   });
 }
 
-app.listen(PORT, () => {
-  console.log(`🚀 Jan Suvidha AI Server running on http://localhost:${PORT}`);
-});
+if (!process.env.VERCEL) {
+  app.listen(PORT, () => {
+    console.log(`🚀 Jan Suvidha AI Server running on http://localhost:${PORT}`);
+  });
+}
 
 export default app;

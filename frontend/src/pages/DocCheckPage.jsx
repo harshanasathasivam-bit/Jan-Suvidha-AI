@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useApp } from '../context/AppContext';
 import { UploadCloud, CheckCircle2, AlertCircle, RefreshCw, FileText, ArrowRight, ShieldCheck } from 'lucide-react';
+import { getApiUrl } from '../utils/api';
 
 export function DocCheckPage() {
   const { lang, t, verifiedDocs, setVerifiedDocs, setActiveTab } = useApp();
