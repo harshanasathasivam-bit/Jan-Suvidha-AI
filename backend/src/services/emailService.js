@@ -2,6 +2,7 @@ import nodemailer from 'nodemailer';
 
 /**
  * Send Transactional Email with 6-digit Verification Code
+ * Logs detailed progress for debugging end-to-end delivery.
  */
 export async function sendVerificationEmail({ toEmail, userName, code, purpose }) {
   const apiKey = process.env.RESEND_API_KEY || process.env.SENDGRID_API_KEY;
@@ -9,15 +10,24 @@ export async function sendVerificationEmail({ toEmail, userName, code, purpose }
   const smtpUser = process.env.SMTP_USER;
   const smtpPass = process.env.SMTP_PASS;
 
-  // Check if real email provider credentials exist
-  const hasEmailConfig = apiKey || (smtpHost && smtpUser && smtpPass);
+  const senderAddress = process.env.EMAIL_FROM || 'Jan Suvidha AI <onboarding@resend.dev>';
 
-  if (!hasEmailConfig) {
-    console.warn('⚠️ No transactional email provider key configured in environment variables.');
+  console.log(`\n================ EMAIL DISPATCH LOG ================`);
+  console.log(`[1] Recipient Email: "${toEmail}"`);
+  console.log(`[2] Purpose: "${purpose}" | Code: "${code}"`);
+  console.log(`[3] From Sender: "${senderAddress}"`);
+  console.log(`[4] Provider Configured: ${apiKey ? 'API KEY PRESENT' : smtpHost ? 'SMTP PRESENT' : 'NONE (MISSING)'}`);
+
+  // Step 1 Check: Ensure provider credentials exist
+  if (!apiKey && (!smtpHost || !smtpUser || !smtpPass)) {
+    console.error(`❌ [EMAIL DISPATCH ERROR] No transactional email provider key configured in environment.`);
+    console.error(`   Please set RESEND_API_KEY or SMTP credentials in backend/.env`);
+    console.log(`====================================================\n`);
+    
     return {
       success: false,
       error: 'EMAIL_KEY_REQUIRED',
-      message: 'No transactional email API key configured. Please provide RESEND_API_KEY or SMTP credentials in your .env file.'
+      message: 'No transactional email provider API key found in environment variables. Please provide RESEND_API_KEY or SMTP credentials in backend/.env'
     };
   }
 
@@ -25,6 +35,7 @@ export async function sendVerificationEmail({ toEmail, userName, code, purpose }
     let transporter;
 
     if (smtpHost) {
+      console.log(`[5] Connecting via SMTP Server (${smtpHost}:${process.env.SMTP_PORT || 587})...`);
       transporter = nodemailer.createTransport({
         host: smtpHost,
         port: Number(process.env.SMTP_PORT) || 587,
@@ -35,7 +46,7 @@ export async function sendVerificationEmail({ toEmail, userName, code, purpose }
         }
       });
     } else {
-      // SMTP transport for Resend / SendGrid / Custom SMTP
+      console.log(`[5] Connecting via Resend/SendGrid API Transporter (smtp.resend.com:465)...`);
       transporter = nodemailer.createTransport({
         host: 'smtp.resend.com',
         port: 465,
@@ -72,23 +83,34 @@ export async function sendVerificationEmail({ toEmail, userName, code, purpose }
       </div>
     `;
 
+    console.log(`[6] Dispatching request to email provider API...`);
     const info = await transporter.sendMail({
-      from: process.env.EMAIL_FROM || '"Jan Suvidha AI" <onboarding@resend.dev>',
+      from: senderAddress,
       to: toEmail,
       subject: subject,
       html: htmlBody
     });
 
+    console.log(`✅ [EMAIL DISPATCH SUCCESS] Provider confirmed message delivery!`);
+    console.log(`   Message ID: ${info.messageId}`);
+    console.log(`   Response: ${JSON.stringify(info.response || info)}`);
+    console.log(`====================================================\n`);
+
     return {
       success: true,
-      messageId: info.messageId
+      messageId: info.messageId,
+      response: info.response
     };
   } catch (err) {
-    console.error('Failed to send verification email:', err);
+    console.error(`❌ [EMAIL DISPATCH FAILED] Provider returned error:`, err.message);
+    if (err.response) console.error(`   Provider API Error Body:`, err.response);
+    console.log(`====================================================\n`);
+
     return {
       success: false,
       error: 'EMAIL_SEND_FAILED',
-      details: err.message
+      details: err.message,
+      providerResponse: err.response || null
     };
   }
 }

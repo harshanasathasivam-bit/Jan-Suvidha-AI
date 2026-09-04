@@ -14,12 +14,20 @@ if (!fs.existsSync(__dirname)) {
 
 const db = new sqlite3.Database(dbPath);
 
-console.log('🌱 Initializing Jan Suvidha AI Database & Auth Schema...');
+console.log('🌱 Initializing Jan Suvidha AI Database Schema & Seed Data...');
 
 db.serialize(() => {
+  // Drop old tables if exist to apply schema updates
+  db.run(`DROP TABLE IF EXISTS required_documents`);
+  db.run(`DROP TABLE IF EXISTS eligibility_rules`);
+  db.run(`DROP TABLE IF EXISTS schemes`);
+  db.run(`DROP TABLE IF EXISTS verification_codes`);
+  db.run(`DROP TABLE IF EXISTS profiles`);
+  db.run(`DROP TABLE IF EXISTS users`);
+
   // 1. Schemes table
   db.run(`
-    CREATE TABLE IF NOT EXISTS schemes (
+    CREATE TABLE schemes (
       id TEXT PRIMARY KEY,
       name_en TEXT NOT NULL,
       name_ta TEXT NOT NULL,
@@ -38,7 +46,7 @@ db.serialize(() => {
 
   // 2. Eligibility Rules
   db.run(`
-    CREATE TABLE IF NOT EXISTS eligibility_rules (
+    CREATE TABLE eligibility_rules (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       scheme_id TEXT NOT NULL,
       field_name TEXT NOT NULL,
@@ -53,7 +61,7 @@ db.serialize(() => {
 
   // 3. Required Documents
   db.run(`
-    CREATE TABLE IF NOT EXISTS required_documents (
+    CREATE TABLE required_documents (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       scheme_id TEXT NOT NULL,
       doc_key TEXT NOT NULL,
@@ -66,9 +74,9 @@ db.serialize(() => {
     )
   `);
 
-  // 4. Users Table (Real Authentication)
+  // 4. Users Table (Real Authentication + Profile Completed Flag)
   db.run(`
-    CREATE TABLE IF NOT EXISTS users (
+    CREATE TABLE users (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       name TEXT NOT NULL,
       email TEXT UNIQUE NOT NULL,
@@ -76,13 +84,14 @@ db.serialize(() => {
       district TEXT DEFAULT 'Chennai',
       annual_income REAL DEFAULT 120000,
       is_verified INTEGER DEFAULT 0,
+      profile_completed INTEGER DEFAULT 0,
       created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     )
   `);
 
-  // 5. Verification Codes Table (6-digit numeric codes with 10-min expiry)
+  // 5. Verification Codes Table
   db.run(`
-    CREATE TABLE IF NOT EXISTS verification_codes (
+    CREATE TABLE verification_codes (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       user_id INTEGER NOT NULL,
       code TEXT NOT NULL,
@@ -94,10 +103,29 @@ db.serialize(() => {
     )
   `);
 
-  // Clear & Re-seed schemes
-  db.run(`DELETE FROM required_documents`);
-  db.run(`DELETE FROM eligibility_rules`);
-  db.run(`DELETE FROM schemes`);
+  // 6. Profiles Table (Stored Citizen Profiles)
+  db.run(`
+    CREATE TABLE profiles (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      user_id INTEGER UNIQUE NOT NULL,
+      full_name TEXT NOT NULL,
+      age INTEGER NOT NULL,
+      gender TEXT NOT NULL,
+      mobile_number TEXT,
+      district TEXT NOT NULL,
+      education_level TEXT NOT NULL,
+      school_type_6_to_12 TEXT NOT NULL,
+      education_course_type TEXT DEFAULT 'regular_higher_education',
+      last_exam_marks_pct REAL DEFAULT 60,
+      annual_family_income REAL NOT NULL,
+      ration_card_head INTEGER DEFAULT 0,
+      ration_card_holder INTEGER DEFAULT 1,
+      category TEXT DEFAULT 'General',
+      disability_status INTEGER DEFAULT 0,
+      updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+      FOREIGN KEY (user_id) REFERENCES users(id)
+    )
+  `);
 
   // 1. KMUT (Kalaignar Magalir Urimai Thogai Thittam)
   const kmut = {
@@ -344,7 +372,7 @@ db.serialize(() => {
     );
   });
 
-  console.log('✅ SQLite Database successfully seeded with 5 Schemes & Auth Schema (users + verification_codes)!');
+  console.log('✅ SQLite Database successfully re-created with clean schema (users, profiles, schemes)!');
 });
 
 db.close();

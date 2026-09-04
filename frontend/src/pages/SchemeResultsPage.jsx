@@ -1,6 +1,6 @@
 import React from 'react';
 import { useApp } from '../context/AppContext';
-import { Award, CheckCircle, AlertTriangle, XCircle, ExternalLink, ArrowRight, Info, ShieldAlert } from 'lucide-react';
+import { Award, CheckCircle, AlertTriangle, XCircle, ExternalLink, ArrowRight, Info, UserCheck, ShieldAlert } from 'lucide-react';
 
 export function SchemeResultsPage() {
   const { lang, t, schemeMatches, loadingMatches, setActiveTab } = useApp();
@@ -13,10 +13,17 @@ export function SchemeResultsPage() {
           <p style={{ color: '#94a3b8' }}>{t.resultsSubtitle}</p>
         </div>
 
-        <button className="btn-primary" onClick={() => setActiveTab('docs')}>
-          <span>Verify Documents</span>
-          <ArrowRight size={18} />
-        </button>
+        <div style={{ display: 'flex', gap: '0.75rem' }}>
+          <button className="btn-secondary" style={{ background: 'rgba(37, 99, 235, 0.15)', borderColor: 'rgba(37, 99, 235, 0.3)', color: '#60a5fa' }} onClick={() => setActiveTab('profile-wizard')}>
+            <UserCheck size={18} />
+            <span>{t.btnEditProfile}</span>
+          </button>
+
+          <button className="btn-primary" onClick={() => setActiveTab('docs')}>
+            <span>Verify Documents</span>
+            <ArrowRight size={18} />
+          </button>
+        </div>
       </div>
 
       {loadingMatches ? (

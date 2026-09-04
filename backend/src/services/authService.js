@@ -137,11 +137,11 @@ export function getUserByEmail(email) {
   });
 }
 
-// Helper: Get user by ID
+// Helper: Get user by ID (includes profile_completed flag)
 export function getUserById(id) {
   const db = getDb();
   return new Promise((resolve, reject) => {
-    db.get(`SELECT id, name, email, district, annual_income, is_verified, created_at FROM users WHERE id = ?`, [id], (err, row) => {
+    db.get(`SELECT id, name, email, district, annual_income, is_verified, profile_completed, created_at FROM users WHERE id = ?`, [id], (err, row) => {
       db.close();
       if (err) return reject(err);
       resolve(row);
@@ -157,12 +157,12 @@ export async function createUser({ name, email, password, district, income }) {
 
   return new Promise((resolve, reject) => {
     db.run(
-      `INSERT INTO users (name, email, hashed_password, district, annual_income, is_verified) VALUES (?, ?, ?, ?, ?, 0)`,
+      `INSERT INTO users (name, email, hashed_password, district, annual_income, is_verified, profile_completed) VALUES (?, ?, ?, ?, ?, 0, 0)`,
       [name, cleanEmail, hashed, district || 'Chennai', Number(income) || 120000],
       function (err) {
         db.close();
         if (err) return reject(err);
-        resolve({ id: this.lastID, name, email: cleanEmail, is_verified: false });
+        resolve({ id: this.lastID, name, email: cleanEmail, is_verified: false, profile_completed: false });
       }
     );
   });

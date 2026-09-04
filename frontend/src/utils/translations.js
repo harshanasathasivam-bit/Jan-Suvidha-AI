@@ -9,6 +9,7 @@ export const translations = {
     navChecklist: "Final Dossier",
     navLogin: "Login / Register",
     navDashboard: "My Dashboard",
+    navProfile: "My Citizen Profile",
     navLogout: "Logout",
     
     heroBadge: "Grounded AI Welfare Matcher • Tamil Nadu State Schemes",
@@ -25,6 +26,37 @@ export const translations = {
     stat3Val: "Instant OCR",
     stat3Label: "Document Health Check",
     
+    // Profile Wizard & Forced Onboarding
+    profileWizardTitle: "Complete Your Citizen Profile",
+    profileWizardSub: "First-time setup: Enter your details to calculate grounded scheme & scholarship eligibility",
+    profileForcedNotice: "🔒 Action Required: Complete your profile to unlock scheme recommendations and eligibility checks.",
+    
+    step1Title: "1. Personal Details",
+    step2Title: "2. Education & Marks",
+    step3Title: "3. Family & Income",
+
+    fullNameLabel: "Full Name",
+    ageLabel: "Age (Years)",
+    genderLabel: "Gender",
+    mobileLabel: "Mobile Number",
+    districtLabel: "District",
+    
+    eduLevelLabel: "Education Level",
+    schoolTypeLabel: "School Type (Classes 6-12)",
+    courseTypeLabel: "Higher Education Course Type",
+    marksLabel: "Last Qualifying Exam Marks (%)",
+    
+    incomeLabel: "Annual Family Income (₹)",
+    rationHeadLabel: "Are you named as Head of Family on Ration Card?",
+    rationHolderLabel: "Do you have a Tamil Nadu Smart Ration Card?",
+    categoryLabel: "Category / Social Group",
+    disabilityLabel: "Disability Status (if applicable)",
+
+    btnNext: "Next Step",
+    btnBack: "Back",
+    btnSaveProfile: "Save Profile & See Recommendations",
+    btnEditProfile: "Edit Citizen Profile",
+
     // Login & Register Screen
     loginTitle: "Citizen Access Portal",
     loginSubtitle: "Sign in or create a new account to check eligibility and manage welfare applications",
@@ -37,8 +69,6 @@ export const translations = {
     passwordPlaceholder: "Enter your secure password",
     nameLabel: "Full Name",
     namePlaceholder: "e.g. Lakshmi Devi",
-    districtLabel: "Tamil Nadu District",
-    incomeLabel: "Annual Family Income (₹)",
 
     submitLoginBtn: "Sign In to Dashboard",
     submitRegisterBtn: "Create Account & Verify Email",
@@ -126,6 +156,7 @@ export const translations = {
     navChecklist: "இறுதிப் பட்டியல்",
     navLogin: "உள்நுழைவு / பதிவு",
     navDashboard: "என் டாஷ்போர்டு",
+    navProfile: "சுயவிவரம்",
     navLogout: "வெளியேறு",
 
     heroBadge: "தமிழ்நாடு அரசு நலத்திட்ட வழிகாட்டி",
@@ -142,6 +173,37 @@ export const translations = {
     stat3Val: "உடனடி OCR",
     stat3Label: "ஆவணத் தர ஆய்வு",
 
+    // Profile Wizard & Forced Onboarding
+    profileWizardTitle: "குடிமகன் சுயவிவரத்தைப் பூர்த்தி செய்க",
+    profileWizardSub: "முதல்முறை பதிவு: நலத்திட்டத் தகுதியைக் கணக்கிட உங்கள் விவரங்களைப் பதிவு செய்யவும்",
+    profileForcedNotice: "🔒 கட்டாயப் பதிவு: நலத்திட்டங்களைப் பெற முதலில் உங்கள் சுயவிவரத்தைப் பூர்த்தி செய்ய வேண்டும்.",
+
+    step1Title: "1. தனிப்பட்ட விவரங்கள்",
+    step2Title: "2. கல்வி விவரங்கள்",
+    step3Title: "3. குடும்பம் & வருமானம்",
+
+    fullNameLabel: "முழு பெயர்",
+    ageLabel: "வயது",
+    genderLabel: "பாலினம்",
+    mobileLabel: "மொபைல் எண்",
+    districtLabel: "மாவட்டம்",
+
+    eduLevelLabel: "கல்வி நிலை",
+    schoolTypeLabel: "பள்ளி வகை (6-12 ஆம் வகுப்பு)",
+    courseTypeLabel: "உயர்கல்வி படிப்பு வகை",
+    marksLabel: "முந்தைய தேர்வு மதிப்பெண் (%)",
+
+    incomeLabel: "குடும்ப ஆண்டு வருமானம் (₹)",
+    rationHeadLabel: "ரேஷன் கார்டில் குடும்பத் தலைவியா?",
+    rationHolderLabel: "ஸ்மார்ட் குடும்ப அட்டை உள்ளதா?",
+    categoryLabel: "சமூகப் பிரிவு",
+    disabilityLabel: "மாற்றுத்திறனாளி சான்று (பொருந்துமெனில்)",
+
+    btnNext: "அடுத்த படி",
+    btnBack: "முந்தையது",
+    btnSaveProfile: "சுயவிவரத்தைச் சேமித்து தகுதியைக் காண்",
+    btnEditProfile: "சுயவிவரத்தைத் திருத்து",
+
     // Login & Register Screen
     loginTitle: "குடிமக்கள் அணுகல் தளம்",
     loginSubtitle: "உங்கள் தகுதியைச் சரிபார்க்க உள்நுழையவும் அல்லது புதிய கணக்கை உருவாக்கவும்",
@@ -154,8 +216,6 @@ export const translations = {
     passwordPlaceholder: "உங்கள் கடவுச்சொல்லை உள்ளிடவும்",
     nameLabel: "முழு பெயர்",
     namePlaceholder: "எ.கா: லட்சுமி தேவி",
-    districtLabel: "தமிழ்நாடு மாவட்டம்",
-    incomeLabel: "குடும்ப ஆண்டு வருமானம் (₹)",
 
     submitLoginBtn: "உள்நுழைக",
     submitRegisterBtn: "கணக்கை உருவாக்கி மின்னஞ்சலைச் சரிபார்க்கவும்",

@@ -11,6 +11,7 @@ import { parseConversationToProfile } from './services/profileParser.js';
 import { matchProfileToSchemes } from './services/eligibilityEngine.js';
 import { processDocumentCheck } from './services/ocrService.js';
 import authRoutes from './routes/authRoutes.js';
+import profileRoutes from './routes/profileRoutes.js';
 
 dotenv.config();
 
@@ -29,6 +30,9 @@ const upload = multer({ storage: multer.memoryStorage() });
 
 // Mount Auth API Routes (/api/auth/*)
 app.use('/api/auth', authRoutes);
+
+// Mount Profile API Routes (/api/profile/*)
+app.use('/api/profile', profileRoutes);
 
 // 1. GET /api/schemes - Fetch seeded database schemes
 app.get('/api/schemes', (req, res) => {
@@ -58,8 +62,8 @@ app.get('/api/schemes', (req, res) => {
   });
 });
 
-// 2. POST /api/profile - Extract structured profile JSON from text/voice conversation
-app.post('/api/profile', (req, res) => {
+// 2. POST /api/parse-profile - Extract structured profile JSON from text/voice conversation
+app.post('/api/parse-profile', (req, res) => {
   try {
     const { messages, currentProfile } = req.body;
     if (!messages || !Array.isArray(messages)) {

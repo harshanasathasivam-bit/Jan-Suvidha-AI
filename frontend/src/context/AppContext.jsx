@@ -7,10 +7,11 @@ export function AppProvider({ children }) {
   const [lang, setLang] = useState('en');
   const [activeTab, setActiveTab] = useState('landing');
   
-  // Auth state
+  // Auth & Profile state
   const [token, setToken] = useState(localStorage.getItem('jan_suvidha_token') || null);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [currentUser, setCurrentUser] = useState(null);
+  const [profileCompleted, setProfileCompleted] = useState(false);
 
   const [profile, setProfile] = useState({
     age: 24,
@@ -53,14 +54,22 @@ export function AppProvider({ children }) {
     setCurrentUser(userObj);
     setIsLoggedIn(true);
 
+    const isDone = Boolean(userObj?.profile_completed);
+    setProfileCompleted(isDone);
+
+    if (!isDone) {
+      // Force onboarding for first-time users
+      setActiveTab('profile-wizard');
+    } else {
+      setActiveTab('dashboard');
+    }
+
     if (userObj) {
       updateProfileAndMatch({
         district: userObj.district || profile.district,
         annual_family_income: userObj.annual_income || profile.annual_family_income
       });
     }
-
-    setActiveTab('dashboard');
   };
 
   const logoutUser = () => {
@@ -68,6 +77,7 @@ export function AppProvider({ children }) {
     setToken(null);
     setCurrentUser(null);
     setIsLoggedIn(false);
+    setProfileCompleted(false);
     setActiveTab('landing');
   };
 
@@ -83,6 +93,13 @@ export function AppProvider({ children }) {
           if (data.success && data.user) {
             setCurrentUser(data.user);
             setIsLoggedIn(true);
+            const isDone = Boolean(data.user.profile_completed);
+            setProfileCompleted(isDone);
+
+            if (!isDone) {
+              setActiveTab('profile-wizard');
+            }
+
             updateProfileAndMatch({
               district: data.user.district,
               annual_family_income: data.user.annual_income
@@ -94,6 +111,15 @@ export function AppProvider({ children }) {
         .catch(() => logoutUser());
     }
   }, []);
+
+  // Strict gating: If logged in but profile not completed, lock activeTab to 'profile-wizard'
+  const setTabGated = (tabName) => {
+    if (isLoggedIn && !profileCompleted && tabName !== 'profile-wizard') {
+      setActiveTab('profile-wizard');
+      return;
+    }
+    setActiveTab(tabName);
+  };
 
   // Fetch grounded matches whenever profile updates
   const updateProfileAndMatch = async (newProfileFields) => {
@@ -131,10 +157,12 @@ export function AppProvider({ children }) {
         toggleLanguage,
         t,
         activeTab,
-        setActiveTab,
+        setActiveTab: setTabGated,
         token,
         isLoggedIn,
         currentUser,
+        profileCompleted,
+        setProfileCompleted,
         loginWithToken,
         logoutUser,
         profile,
