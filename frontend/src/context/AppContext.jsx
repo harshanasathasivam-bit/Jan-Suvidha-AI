@@ -169,11 +169,21 @@ export function AppProvider({ children }) {
     }
   }, []);
 
-  // Strict gating: If logged in but profile not completed, lock activeTab to 'profile-wizard'
+  // Strict Authentication & Onboarding Gating
   const setTabGated = (tabName) => {
-    if (isLoggedIn && !profileCompleted && tabName !== 'profile-wizard') {
-      setActiveTab('profile-wizard');
-      return;
+    if (!isLoggedIn) {
+      // Require registration/login for all internal pages
+      if (tabName !== 'landing' && tabName !== 'login') {
+        setAuthMode('register');
+        setActiveTab('login');
+        return;
+      }
+    } else if (!profileCompleted) {
+      // Force onboarding profile wizard for first-time users
+      if (tabName !== 'profile-wizard' && tabName !== 'login') {
+        setActiveTab('profile-wizard');
+        return;
+      }
     }
     setActiveTab(tabName);
   };

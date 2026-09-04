@@ -41,40 +41,42 @@ export function Header() {
             </div>
           </div>
 
-          {/* Navigation Links */}
-          <nav className="header-nav">
-            <button 
-              className={`nav-tab-btn ${activeTab === 'chat' ? 'active' : ''}`}
-              onClick={() => setActiveTab('chat')}
-            >
-              <MessageSquare size={16} />
-              <span>{t.navChat}</span>
-            </button>
+          {/* Navigation Links - Only visible when logged in */}
+          {isLoggedIn && (
+            <nav className="header-nav">
+              <button 
+                className={`nav-tab-btn ${activeTab === 'chat' ? 'active' : ''}`}
+                onClick={() => setActiveTab('chat')}
+              >
+                <MessageSquare size={16} />
+                <span>{t.navChat}</span>
+              </button>
 
-            <button 
-              className={`nav-tab-btn ${activeTab === 'results' ? 'active' : ''}`}
-              onClick={() => setActiveTab('results')}
-            >
-              <Award size={16} />
-              <span>{t.navResults} ({eligibleCount})</span>
-            </button>
+              <button 
+                className={`nav-tab-btn ${activeTab === 'results' ? 'active' : ''}`}
+                onClick={() => setActiveTab('results')}
+              >
+                <Award size={16} />
+                <span>{t.navResults} ({eligibleCount})</span>
+              </button>
 
-            <button 
-              className={`nav-tab-btn ${activeTab === 'docs' ? 'active' : ''}`}
-              onClick={() => setActiveTab('docs')}
-            >
-              <FileCheck size={16} />
-              <span>{t.navDocs}</span>
-            </button>
+              <button 
+                className={`nav-tab-btn ${activeTab === 'docs' ? 'active' : ''}`}
+                onClick={() => setActiveTab('docs')}
+              >
+                <FileCheck size={16} />
+                <span>{t.navDocs}</span>
+              </button>
 
-            <button 
-              className={`nav-tab-btn ${activeTab === 'checklist' ? 'active' : ''}`}
-              onClick={() => setActiveTab('checklist')}
-            >
-              <ClipboardCheck size={16} />
-              <span>{t.navChecklist}</span>
-            </button>
-          </nav>
+              <button 
+                className={`nav-tab-btn ${activeTab === 'checklist' ? 'active' : ''}`}
+                onClick={() => setActiveTab('checklist')}
+              >
+                <ClipboardCheck size={16} />
+                <span>{t.navChecklist}</span>
+              </button>
+            </nav>
+          )}
 
           {/* Controls: Language and Auth */}
           <div className="nav-controls">
