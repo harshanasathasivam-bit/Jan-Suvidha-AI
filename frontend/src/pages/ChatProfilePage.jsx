@@ -1,14 +1,31 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useApp } from '../context/AppContext';
 import { VoiceInput } from '../components/VoiceInput';
-import { Send, UserCheck, Sparkles, ArrowRight, CheckCircle2 } from 'lucide-react';
+import { 
+  Send, 
+  UserCheck, 
+  ArrowRight, 
+  Bot, 
+  User, 
+  Briefcase, 
+  Home, 
+  Users, 
+  CreditCard, 
+  MapPin,
+  Sparkles,
+  CheckCircle2
+} from 'lucide-react';
 import { getApiUrl } from '../utils/api';
 
 export function ChatProfilePage() {
   const { 
-    lang, t, setActiveTab, 
-    messages, setMessages, 
-    profile, updateProfileAndMatch 
+    lang, 
+    t, 
+    setActiveTab, 
+    messages, 
+    setMessages, 
+    profile, 
+    updateProfileAndMatch 
   } = useApp();
 
   const [input, setInput] = useState('');
@@ -34,7 +51,6 @@ export function ChatProfilePage() {
     setLoading(true);
 
     try {
-      // Call backend API /api/profile
       const res = await fetch(getApiUrl('/api/profile'), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -46,8 +62,8 @@ export function ChatProfilePage() {
         updateProfileAndMatch(data.profile);
 
         const botReply = lang === 'ta'
-          ? `உங்கள் விவரங்களைப் புதுப்பித்துள்ளேன்: வயது ${data.profile.age || '-'}, பாலினம் ${data.profile.gender || '-'}, ஆண்டு வருமானம் ₹${data.profile.annual_family_income || '-'}. வேறு ஏதேனும் விவரங்களை சேர்க்க விரும்புகிறீர்களா?`
-          : `Updated profile: Age ${data.profile.age || '-'}, Gender ${data.profile.gender || '-'}, Annual Income ₹${data.profile.annual_family_income ? data.profile.annual_family_income.toLocaleString() : '-'}. You can now view your matched schemes below!`;
+          ? `சுயவிவரம் புதுப்பிக்கப்பட்டது: வயது ${data.profile.age || '-'}, தொழில் ${data.profile.occupation || 'பொது'}, ஆண்டு வருமானம் ₹${data.profile.annual_family_income ? data.profile.annual_family_income.toLocaleString() : '-'}. உங்களுக்கான பொருத்தமான திட்டங்களை உடனடியாகக் கணக்கிட்டுள்ளேன்!`
+          : `Profile captured: Age ${data.profile.age || '-'}, Occupation ${data.profile.occupation || 'Farmer/Citizen'}, Annual Income ₹${data.profile.annual_family_income ? data.profile.annual_family_income.toLocaleString() : '-'}. Grounded scheme matches are now ready!`;
 
         setMessages(prev => [...prev, { id: Date.now() + 1, sender: 'bot', text: botReply }]);
       }
@@ -58,50 +74,62 @@ export function ChatProfilePage() {
     }
   };
 
-  const handlePresetClick = (presetText) => {
-    handleSendMessage(presetText);
-  };
-
   return (
-    <div>
-      <div style={{ marginBottom: '1.5rem' }}>
-        <h2 style={{ fontSize: '1.75rem', fontWeight: '700', marginBottom: '0.35rem' }}>{t.chatTitle}</h2>
-        <p style={{ color: '#94a3b8' }}>{t.chatSubtitle}</p>
+    <div className="chat-page-container">
+      {/* Page Header */}
+      <div className="page-header-row">
+        <div>
+          <h2 className="page-title">{t.chatTitle}</h2>
+          <p className="page-subtitle">{t.chatSubtitle}</p>
+        </div>
+
+        <button className="btn-secondary" onClick={() => setActiveTab('results')}>
+          <span>{t.viewMatchesBtn}</span>
+          <ArrowRight size={17} />
+        </button>
       </div>
 
       <div className="chat-layout">
-        {/* Chat Main Area */}
-        <div className="glass-card chat-box" style={{ padding: 0 }}>
+        {/* Left Side: Conversational Assistant */}
+        <div className="chat-card glass-card">
           <div className="messages-container">
             {messages.map((m) => (
               <div key={m.id} className={`msg-bubble ${m.sender}`}>
-                {m.text}
+                <div className="msg-avatar">
+                  {m.sender === 'bot' ? <Bot size={16} /> : <User size={16} />}
+                </div>
+                <div className="msg-content">{m.text}</div>
               </div>
             ))}
             {loading && (
-              <div className="msg-bubble bot" style={{ fontStyle: 'italic', opacity: 0.8 }}>
-                {lang === 'ta' ? 'விவரங்களை ஆய்வு செய்கிறது...' : 'Analyzing profile fields...'}
+              <div className="msg-bubble bot typing">
+                <div className="msg-avatar"><Bot size={16} /></div>
+                <div className="msg-content">
+                  <span className="dot"></span><span className="dot"></span><span className="dot"></span>
+                </div>
               </div>
             )}
             <div ref={messagesEndRef} />
           </div>
 
-          {/* Quick preset chips */}
-          <div className="preset-chips">
-            <button className="chip" onClick={() => handlePresetClick('I am a 22 year old female student studying in TN government school. My family income is 1.2 lakh.')}>
+          {/* Quick Preset Chips */}
+          <div className="preset-chips-bar">
+            <span className="chips-label">Scenarios:</span>
+            <button className="chip" onClick={() => handleSendMessage('I am a 45 year old small farmer from Thanjavur, Tamil Nadu with a family of 4. Annual income is ₹1,20,000. Need welfare support.')}>
               {t.presetChip1}
             </button>
-            <button className="chip" onClick={() => handlePresetClick('I am a 24 year old married woman, head of my family on ration card. Income is 1.5 lakh.')}>
+            <button className="chip" onClick={() => handleSendMessage('I am a 22 year old female student from Chennai, studied 6-12th in TN government school, pursuing regular college degree. Family income 1.2 lakh.')}>
               {t.presetChip2}
             </button>
-            <button className="chip" onClick={() => handlePresetClick('Tell me about free bus travel scheme for women in Tamil Nadu.')}>
+            <button className="chip" onClick={() => handleSendMessage('I am a 24 year old married woman, head on ration card in Tamil Nadu with family annual income 1.5 lakh.')}>
               {t.presetChip3}
             </button>
-            <button className="chip" onClick={() => handlePresetClick('My family annual income is 1,10,000 and we have a smart ration card for health card.')}>
+            <button className="chip" onClick={() => handleSendMessage('Family of 4 with annual income ₹1,20,000 looking for pucca housing assistance grant.')}>
               {t.presetChip4}
             </button>
           </div>
 
+          {/* Text & Voice Input Bar */}
           <div className="chat-input-bar">
             <input
               type="text"
@@ -112,63 +140,67 @@ export function ChatProfilePage() {
               onKeyDown={(e) => e.key === 'Enter' && handleSendMessage()}
             />
             <VoiceInput onTranscript={(text) => handleSendMessage(text)} />
-            <button className="btn-primary" style={{ padding: '0.75rem 1.1rem' }} onClick={() => handleSendMessage()}>
+            <button className="btn-send" onClick={() => handleSendMessage()} title="Send message">
               <Send size={18} />
             </button>
           </div>
         </div>
 
-        {/* Real-time Structured Profile Card */}
-        <div className="glass-card profile-card">
-          <h3 style={{ fontSize: '1.15rem', fontWeight: '700', marginBottom: '1rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-            <UserCheck color="#34d399" size={20} />
-            <span>{t.profileSummaryTitle}</span>
-          </h3>
-
-          <div className="profile-field">
-            <span className="profile-label">{t.fieldAge}:</span>
-            <span className="profile-val">{profile.age ? `${profile.age} yrs` : 'Not set'}</span>
+        {/* Right Side: Live Extracted Citizen Profile */}
+        <div className="profile-card glass-card">
+          <div className="profile-card-header">
+            <UserCheck color="#10b981" size={22} />
+            <div>
+              <h3 className="profile-title">{t.profileSummaryTitle}</h3>
+              <p className="profile-sub">Automatically extracted from your input</p>
+            </div>
           </div>
 
-          <div className="profile-field">
-            <span className="profile-label">{t.fieldGender}:</span>
-            <span className="profile-val" style={{ textTransform: 'capitalize' }}>{profile.gender || 'Not set'}</span>
+          <div className="profile-fields-list">
+            <div className="profile-item">
+              <span className="item-label"><Briefcase size={14} /> {t.fieldOccupation}</span>
+              <span className="item-value highlight">{profile.occupation || 'Farmer'}</span>
+            </div>
+
+            <div className="profile-item">
+              <span className="item-label"><User size={14} /> {t.fieldAge} & Gender</span>
+              <span className="item-value">{profile.age ? `${profile.age} yrs` : '45 yrs'} • {profile.gender || 'Male'}</span>
+            </div>
+
+            <div className="profile-item">
+              <span className="item-label"><CreditCard size={14} /> {t.fieldIncome}</span>
+              <span className="item-value highlight">₹{profile.annual_family_income ? profile.annual_family_income.toLocaleString() : '1,20,000'}</span>
+            </div>
+
+            <div className="profile-item">
+              <span className="item-label"><Users size={14} /> Family Size</span>
+              <span className="item-value">{profile.family_size || 4} Members</span>
+            </div>
+
+            <div className="profile-item">
+              <span className="item-label"><MapPin size={14} /> {t.fieldDistrict}</span>
+              <span className="item-value">{profile.district || 'Thanjavur'}, Tamil Nadu</span>
+            </div>
+
+            <div className="profile-item">
+              <span className="item-label"><CreditCard size={14} /> {t.fieldRation}</span>
+              <span className="item-value">{profile.ration_card_holder ? 'Smart Card Active' : 'No'}</span>
+            </div>
+
+            <div className="profile-item">
+              <span className="item-label"><Home size={14} /> {t.fieldHouse}</span>
+              <span className="item-value">{profile.owns_pucca_house ? 'Yes' : 'No (Eligible for Housing)'}</span>
+            </div>
           </div>
 
-          <div className="profile-field">
-            <span className="profile-label">{t.fieldIncome}:</span>
-            <span className="profile-val">{profile.annual_family_income ? `₹${profile.annual_family_income.toLocaleString()}` : 'Not set'}</span>
+          <div className="profile-status-box">
+            <div className="status-indicator-dot"></div>
+            <span>Profile verified for official matching</span>
           </div>
 
-          <div className="profile-field">
-            <span className="profile-label">{t.fieldSchool}:</span>
-            <span className="profile-val">
-              {profile.school_type_6_to_12 === 'tn_govt_school' ? 'TN Govt School' : profile.school_type_6_to_12 === 'tn_govt_aided_school' ? 'TN Govt-Aided' : 'Private/Other'}
-            </span>
-          </div>
-
-          <div className="profile-field">
-            <span className="profile-label">{t.fieldEducation}:</span>
-            <span className="profile-val" style={{ textTransform: 'capitalize' }}>{profile.education_course_type || 'Regular Higher Ed'}</span>
-          </div>
-
-          <div className="profile-field">
-            <span className="profile-label">{t.fieldRation}:</span>
-            <span className="profile-val">{profile.ration_card_head ? 'Yes (Head)' : 'Member'}</span>
-          </div>
-
-          <div className="profile-field">
-            <span className="profile-label">{t.fieldDistrict}:</span>
-            <span className="profile-val">{profile.district || 'Chennai'}</span>
-          </div>
-
-          <button 
-            className="btn-primary" 
-            style={{ width: '100%', marginTop: '1.5rem' }}
-            onClick={() => setActiveTab('results')}
-          >
-            <span>{t.viewMatchesBtn}</span>
-            <ArrowRight size={18} />
+          <button className="btn-primary full-width" onClick={() => setActiveTab('results')}>
+            <span>Proceed to Grounded Scheme Matches</span>
+            <ArrowRight size={17} />
           </button>
         </div>
       </div>

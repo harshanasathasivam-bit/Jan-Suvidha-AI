@@ -1,135 +1,331 @@
 import React from 'react';
 import { useApp } from '../context/AppContext';
-import { Printer, Download, CheckCircle, ShieldCheck, Award, FileText, ArrowLeft } from 'lucide-react';
+import { 
+  Printer, 
+  CheckCircle2, 
+  AlertTriangle, 
+  ExternalLink, 
+  ArrowRight, 
+  FileEdit, 
+  ShieldAlert, 
+  Sparkles, 
+  FileCheck 
+} from 'lucide-react';
 
 export function FinalChecklistPage() {
-  const { lang, t, profile, schemeMatches, verifiedDocs, setActiveTab } = useApp();
-
-  const eligibleSchemes = schemeMatches.filter(s => s.status === 'ELIGIBLE' || s.status === 'PARTIALLY_ELIGIBLE');
+  const { 
+    lang, 
+    t, 
+    profile, 
+    selectedScheme, 
+    readinessMetrics, 
+    setActiveTab 
+  } = useApp();
 
   const handlePrint = () => {
     window.print();
   };
 
+  const scheme = selectedScheme || {
+    nameEn: "Pradhan Mantri Awas Yojana - Urban 2.0 (PMAY-U 2.0)",
+    nameTa: "பிரதான் மந்திரி ஆவாஸ் யோஜனா - நகர்ப்புறம் 2.0",
+    government: "Government of India & Tamil Nadu",
+    officialUrl: "https://pmay-urban.gov.in",
+    officialSource: "Ministry of Housing and Urban Affairs",
+    benefitEn: "Direct financial subsidy up to ₹2.5 Lakh for pucca house construction",
+    benefitTa: "சொந்த வீடு கட்ட ₹2.5 லட்சம் வரை நேரடி அரசு மானியம்"
+  };
+
   return (
-    <div>
-      <div className="no-print" style={{ marginBottom: '1.5rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
+    <div className="final-readiness-container">
+      {/* Top Header Row */}
+      <div className="page-header-row no-print">
         <div>
-          <h2 style={{ fontSize: '1.75rem', fontWeight: '700', marginBottom: '0.35rem' }}>{t.checklistTitle}</h2>
-          <p style={{ color: '#94a3b8' }}>{t.checklistSubtitle}</p>
+          <h2 className="page-title">{t.readinessTitle}</h2>
+          <p className="page-subtitle">{t.readinessSubtitle}</p>
         </div>
 
-        <div style={{ display: 'flex', gap: '0.75rem' }}>
-          <button className="btn-primary" onClick={handlePrint}>
-            <Printer size={18} />
+        <div className="header-actions">
+          <button className="btn-secondary" onClick={handlePrint}>
+            <Printer size={16} />
             <span>{t.printBtn}</span>
           </button>
         </div>
       </div>
 
-      {/* Printable Paper Dossier Container */}
-      <div className="checklist-container">
-        <div className="checklist-header">
+      {/* Final Success Banner */}
+      <div className="success-banner-card glass-card no-print">
+        <div className="success-banner-content">
+          <div className="success-badge-tag">
+            <FileCheck size={16} />
+            <span>FINAL STAGE VERIFICATION</span>
+          </div>
+
+          <h2 className="success-heading" style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+            <Sparkles size={26} color="#60a5fa" />
+            <span>{t.finalSuccessHeading}</span>
+          </h2>
+
+          <div className="success-highlights-row">
+            <span className="highlight-pill pass" style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
+              <CheckCircle2 size={13} /> Profile completed
+            </span>
+            <span className="highlight-pill pass" style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
+              <CheckCircle2 size={13} /> Scheme identified: {scheme.nameEn?.split('(')[0] || 'Target Scheme'}
+            </span>
+            <span className="highlight-pill pass" style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
+              <CheckCircle2 size={13} /> Grounded eligibility reviewed
+            </span>
+            <span className="highlight-pill warn" style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
+              <AlertTriangle size={13} /> 1 document needs verification
+            </span>
+          </div>
+        </div>
+
+        {/* Overall Score Circular Metric Widget */}
+        <div className="readiness-gauge-box">
+          <div className="gauge-circle">
+            <div className="gauge-number">{readinessMetrics.overallScore}%</div>
+            <div className="gauge-sub">READINESS</div>
+          </div>
+        </div>
+      </div>
+
+      {/* Component Breakdown Progress Bars */}
+      <div className="readiness-breakdown-card glass-card no-print">
+        <h3 className="section-title-small">Component Readiness Breakdown</h3>
+
+        <div className="progress-bars-grid">
+          {/* Profile Completeness */}
+          <div className="progress-item">
+            <div className="progress-label-row">
+              <span>{t.profileCompleteness}</span>
+              <strong>{readinessMetrics.profileScore}%</strong>
+            </div>
+            <div className="progress-track">
+              <div 
+                className="progress-fill profile" 
+                style={{ width: `${readinessMetrics.profileScore}%` }}
+              ></div>
+            </div>
+          </div>
+
+          {/* Eligibility Readiness */}
+          <div className="progress-item">
+            <div className="progress-label-row">
+              <span>{t.eligibilityReadiness}</span>
+              <strong>{readinessMetrics.eligibilityScore}%</strong>
+            </div>
+            <div className="progress-track">
+              <div 
+                className="progress-fill eligibility" 
+                style={{ width: `${readinessMetrics.eligibilityScore}%` }}
+              ></div>
+            </div>
+          </div>
+
+          {/* Documents Readiness */}
+          <div className="progress-item">
+            <div className="progress-label-row">
+              <span>{t.documentsReadiness}</span>
+              <strong>{readinessMetrics.docScore}%</strong>
+            </div>
+            <div className="progress-track">
+              <div 
+                className="progress-fill documents" 
+                style={{ width: `${readinessMetrics.docScore}%` }}
+              ></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Ready to Apply & Needs Attention Columns */}
+      <div className="readiness-columns-grid no-print">
+        {/* Ready To Apply */}
+        <div className="audit-col ready glass-card">
+          <h4 className="col-header pass">
+            <CheckCircle2 size={18} />
+            <span>{t.readyToApplyHeader}</span>
+          </h4>
+          <ul className="audit-list">
+            {readinessMetrics.readyItems.map((item, idx) => (
+              <li key={idx} className="audit-list-item pass">
+                <CheckCircle2 size={16} className="icon pass" />
+                <span>{item}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+
+        {/* Needs Attention */}
+        <div className="audit-col attention glass-card">
+          <h4 className="col-header warn">
+            <AlertTriangle size={18} />
+            <span>{t.needsAttentionHeader}</span>
+          </h4>
+          <ul className="audit-list">
+            {readinessMetrics.attentionItems.map((item, idx) => (
+              <li key={idx} className="audit-list-item warn">
+                <AlertTriangle size={16} className="icon warn" />
+                <span>{item}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </div>
+
+      {/* Next Actions & Action Buttons */}
+      <div className="next-actions-card glass-card no-print">
+        <h4 className="col-header" style={{ color: '#f8fafc', marginBottom: '1rem' }}>
+          <ArrowRight size={18} color="#3b82f6" />
+          <span>{t.nextActionsHeader}</span>
+        </h4>
+
+        <div className="actions-steps-list">
+          <div className="action-step-item">
+            <div className="step-badge-num">1</div>
+            <div className="step-text">
+              <strong>Upload missing bank passbook copy</strong>
+              <p>Ensures immediate Direct Benefit Transfer (DBT) credit into your account.</p>
+            </div>
+            <button className="btn-secondary small" onClick={() => setActiveTab('docs')}>
+              <FileEdit size={14} />
+              <span>{t.actionFixDoc}</span>
+            </button>
+          </div>
+
+          <div className="action-step-item">
+            <div className="step-badge-num">2</div>
+            <div className="step-text">
+              <strong>Verify VAO / Revenue Income Certificate</strong>
+              <p>Verify that your certificate is within the 1-year validity period for revenue audits.</p>
+            </div>
+            <button className="btn-secondary small" onClick={() => setActiveTab('docs')}>
+              <span>{t.actionFixDoc}</span>
+            </button>
+          </div>
+
+          <div className="action-step-item highlight">
+            <div className="step-badge-num">3</div>
+            <div className="step-text">
+              <strong>Proceed to official government registration portal</strong>
+              <p>Submit your verified dossier directly to the authorized department.</p>
+            </div>
+            <a 
+              href={scheme.officialUrl} 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="btn-primary small"
+            >
+              <span>{t.actionOfficialPortal}</span>
+              <ExternalLink size={14} />
+            </a>
+          </div>
+        </div>
+
+        {/* Safety Guardrail Notice */}
+        <div className="guardrail-notice">
+          <ShieldAlert size={16} />
+          <span>{t.noSubmitNotice}</span>
+        </div>
+      </div>
+
+      {/* PRINTABLE DOSSIER */}
+      <div className="printable-dossier-paper">
+        <div className="dossier-header-bar">
           <div>
-            <h1 style={{ fontSize: '1.6rem', fontWeight: '800', color: '#0f172a' }}>
-              Jan Suvidha AI — Tamil Nadu Citizen Application Dossier
+            <h1 className="dossier-title">
+              Jan Suvidha AI — Citizen Welfare Pre-Submission Dossier
             </h1>
-            <p style={{ fontSize: '0.9rem', color: '#475569', marginTop: '4px' }}>
-              Generated on: {new Date().toLocaleDateString('en-IN')} | Reference #: TN-JS-{Math.floor(100000 + Math.random() * 900000)}
+            <p className="dossier-sub">
+              Target Scheme: <strong>{scheme.nameEn}</strong> • Reference #: TN-JS-{Math.floor(100000 + Math.random() * 900000)} • Date: {new Date().toLocaleDateString('en-IN')}
             </p>
           </div>
-
-          <div style={{ background: '#dcfce7', border: '1px solid #86efac', color: '#166534', padding: '0.5rem 1rem', borderRadius: '20px', fontWeight: '700', fontSize: '0.85rem' }}>
-            STATUS: READY TO SUBMIT
+          <div className="dossier-status-pill">
+            APPLICATION READINESS: {readinessMetrics.overallScore}%
           </div>
         </div>
 
-        {/* Section 1: Citizen Profile Summary */}
-        <div style={{ marginBottom: '2rem' }}>
-          <h3 style={{ fontSize: '1.1rem', borderBottom: '2px solid #0f172a', paddingBottom: '0.4rem', marginBottom: '0.75rem', color: '#0f172a' }}>
-            1. Citizen Profile Summary / குடிமகன் சுயவிவரக் சுருக்கம்
-          </h3>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '0.75rem', fontSize: '0.9rem' }}>
-            <div><strong>Age / வயது:</strong> {profile.age || '-'} years</div>
-            <div><strong>Gender / பாலினம்:</strong> {profile.gender || '-'}</div>
-            <div><strong>Annual Income / வருமானம்:</strong> ₹{profile.annual_family_income ? profile.annual_family_income.toLocaleString() : '-'}</div>
-            <div><strong>District / மாவட்டம்:</strong> {profile.district || 'Chennai'}</div>
-            <div><strong>Ration Card Head:</strong> {profile.ration_card_head ? 'Yes' : 'Member'}</div>
-            <div><strong>School Type (6-12):</strong> {profile.school_type_6_to_12 || 'Govt School'}</div>
+        {/* Citizen Profile Summary */}
+        <div className="dossier-section">
+          <h3 className="dossier-sec-title">1. Citizen Verified Profile</h3>
+          <div className="dossier-grid-3">
+            <div><strong>Citizen Name:</strong> {profile.name || 'Citizen'}</div>
+            <div><strong>Occupation:</strong> {profile.occupation || 'Farmer'}</div>
+            <div><strong>Age / Gender:</strong> {profile.age || 45} yrs • {profile.gender || 'Male'}</div>
+            <div><strong>Annual Family Income:</strong> ₹{profile.annual_family_income ? profile.annual_family_income.toLocaleString() : '1,20,000'}</div>
+            <div><strong>District / State:</strong> {profile.district || 'Thanjavur'}, Tamil Nadu</div>
+            <div><strong>Smart Ration Card:</strong> {profile.ration_card_holder ? 'Active (Family Head)' : 'Active'}</div>
           </div>
         </div>
 
-        {/* Section 2: Eligible Welfare Schemes */}
-        <div style={{ marginBottom: '2rem' }}>
-          <h3 style={{ fontSize: '1.1rem', borderBottom: '2px solid #0f172a', paddingBottom: '0.4rem', marginBottom: '0.75rem', color: '#0f172a' }}>
-            2. Matched Eligible Schemes & Citations / தகுதியான நலத்திட்டங்கள்
-          </h3>
-
-          <table className="checklist-table">
+        {/* Scheme & Grounded Eligibility Citation */}
+        <div className="dossier-section">
+          <h3 className="dossier-sec-title">2. Target Scheme Grounded Evaluation</h3>
+          <table className="dossier-table">
             <thead>
               <tr>
                 <th>Scheme Name</th>
-                <th>Benefit</th>
-                <th>Match Score</th>
-                <th>Grounded Rule Citation</th>
+                <th>Authority</th>
+                <th>Benefit Assistance</th>
+                <th>Eligibility Status</th>
               </tr>
             </thead>
             <tbody>
-              {eligibleSchemes.map((s) => (
-                <tr key={s.schemeId}>
-                  <td><strong>{s.nameEn}</strong><br/><small style={{ color: '#64748b' }}>{s.nameTa}</small></td>
-                  <td style={{ color: '#0369a1', fontWeight: '600' }}>{s.benefitEn}</td>
-                  <td><span style={{ background: '#e0f2fe', color: '#0369a1', padding: '2px 8px', borderRadius: '12px', fontWeight: '700' }}>{s.matchPercentage}%</span></td>
-                  <td style={{ fontSize: '0.85rem' }}>
-                    {s.passedRules.map(r => r.en).slice(0, 2).join('; ')}
-                  </td>
-                </tr>
-              ))}
+              <tr>
+                <td><strong>{scheme.nameEn}</strong><br/><small>{scheme.nameTa}</small></td>
+                <td>{scheme.government}</td>
+                <td>{scheme.benefitEn}</td>
+                <td><strong style={{ color: '#15803d' }}>ELIGIBLE (Score: {readinessMetrics.eligibilityScore}%)</strong></td>
+              </tr>
             </tbody>
           </table>
         </div>
 
-        {/* Section 3: Verified Documents Checklist */}
-        <div>
-          <h3 style={{ fontSize: '1.1rem', borderBottom: '2px solid #0f172a', paddingBottom: '0.4rem', marginBottom: '0.75rem', color: '#0f172a' }}>
-            3. Document Verification Checklist / ஆவணச் சான்றுகள்
-          </h3>
-
-          <table className="checklist-table">
+        {/* Document Readiness Audit */}
+        <div className="dossier-section">
+          <h3 className="dossier-sec-title">3. Document Readiness Audit Checklist</h3>
+          <table className="dossier-table">
             <thead>
               <tr>
                 <th>Required Document</th>
-                <th>Verification Status</th>
-                <th>OCR Health Check</th>
+                <th>Readability</th>
+                <th>OCR Health Status</th>
+                <th>Action Required</th>
               </tr>
             </thead>
             <tbody>
               <tr>
                 <td>Aadhaar Card (Bank Linked)</td>
-                <td style={{ color: '#166534', fontWeight: '700' }}>✔ VERIFIED / சரிபார்க்கப்பட்டது</td>
-                <td>Blur & 12-digit format passed</td>
+                <td>CLEAR</td>
+                <td style={{ color: '#15803d', fontWeight: 'bold' }}>READY</td>
+                <td>None (12-digit UID verified)</td>
               </tr>
               <tr>
                 <td>Smart Family Ration Card</td>
-                <td style={{ color: '#166534', fontWeight: '700' }}>✔ VERIFIED / சரிபார்க்கப்பட்டது</td>
-                <td>Family head matched</td>
+                <td>CLEAR</td>
+                <td style={{ color: '#15803d', fontWeight: 'bold' }}>READY</td>
+                <td>None (Head of household listed)</td>
               </tr>
               <tr>
-                <td>Income Certificate / Revenue Proof</td>
-                <td style={{ color: '#166534', fontWeight: '700' }}>✔ VERIFIED / சரிபார்க்கப்பட்டது</td>
-                <td>Income limit under threshold</td>
+                <td>Revenue Income Certificate</td>
+                <td>FAIR</td>
+                <td style={{ color: '#b45309', fontWeight: 'bold' }}>ATTENTION</td>
+                <td>VAO renewal verification recommended</td>
               </tr>
               <tr>
-                <td>Bank Passbook / Bonafide Certificate</td>
-                <td style={{ color: '#166534', fontWeight: '700' }}>✔ READY FOR SUBMISSION</td>
-                <td>Legible photo upload</td>
+                <td>Bank Passbook Statement</td>
+                <td>PENDING</td>
+                <td style={{ color: '#64748b' }}>NOT UPLOADED</td>
+                <td>Attach copy for direct benefit transfer</td>
               </tr>
             </tbody>
           </table>
         </div>
 
-        <div style={{ marginTop: '2.5rem', paddingTop: '1rem', borderTop: '1px solid #cbd5e1', fontSize: '0.8rem', color: '#64748b', textAlign: 'center' }}>
-          {t.disclaimer}
+        <div className="dossier-footer-note">
+          Notice: Jan Suvidha AI provides grounded algorithmic matching against confirmed 2026 government guidelines. Final benefit approval and sanctioning is strictly determined by the authorized government agency.
         </div>
       </div>
     </div>

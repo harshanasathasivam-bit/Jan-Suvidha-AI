@@ -11,8 +11,11 @@ export function parseConversationToProfile(messages, currentProfile = {}) {
     .toLowerCase();
 
   const profile = {
+    name: currentProfile.name || 'Citizen',
     age: currentProfile.age || null,
     gender: currentProfile.gender || null, // 'female', 'male', 'transgender'
+    occupation: currentProfile.occupation || null, // 'farmer', 'student', 'worker', etc.
+    family_size: currentProfile.family_size || 4,
     state_domicile: currentProfile.state_domicile || 'tamil_nadu',
     annual_family_income: currentProfile.annual_family_income !== undefined ? currentProfile.annual_family_income : null,
     ration_card_head: currentProfile.ration_card_head !== undefined ? currentProfile.ration_card_head : null,
@@ -26,18 +29,28 @@ export function parseConversationToProfile(messages, currentProfile = {}) {
     bpl_or_low_income: currentProfile.bpl_or_low_income !== undefined ? currentProfile.bpl_or_low_income : null,
     eligible_daughters_count: currentProfile.eligible_daughters_count || 1,
     owns_four_wheeler: currentProfile.owns_four_wheeler !== undefined ? currentProfile.owns_four_wheeler : false,
+    owns_pucca_house: currentProfile.owns_pucca_house !== undefined ? currentProfile.owns_pucca_house : false,
     land_ownership_wet_acres: currentProfile.land_ownership_wet_acres || 0,
     land_ownership_dry_acres: currentProfile.land_ownership_dry_acres || 0,
     is_govt_employee_or_pensioner: currentProfile.is_govt_employee_or_pensioner !== undefined ? currentProfile.is_govt_employee_or_pensioner : false,
-    district: currentProfile.district || 'Chennai'
+    district: currentProfile.district || 'Thanjavur'
   };
+
+  // Occupation extraction
+  if (/farmer|agriculture|cultivator|விவசாயி|விவசாயம்/i.test(fullText)) {
+    profile.occupation = 'farmer';
+  } else if (/student|மாணவி|மாணவர்|படிப்பு|college/i.test(fullText)) {
+    profile.occupation = 'student';
+  } else if (/daily wage|coolie|கூலி|தொழிலாளி/i.test(fullText)) {
+    profile.occupation = 'daily_wage';
+  }
 
   // Gender extraction (Tamil + English)
   if (/woman|female|girl|lady|பெண்|மாணவி|தாயார்|அம்மா|மனைவி/i.test(fullText)) {
     profile.gender = 'female';
   } else if (/transgender|திருநங்கை/i.test(fullText)) {
     profile.gender = 'transgender';
-  } else if (/man|male|boy|ஆண்/i.test(fullText)) {
+  } else if (/man|male|boy|ஆண்|விவசாயி/i.test(fullText) && !profile.gender) {
     profile.gender = 'male';
   }
 
@@ -47,7 +60,13 @@ export function parseConversationToProfile(messages, currentProfile = {}) {
     profile.age = parseInt(ageMatch[1], 10);
   }
 
-  // Income extraction (e.g. 1.5 lakh, 150000, 80k, 50,000, 1.2L, 2.5L, 70 ஆயிரம்)
+  // Family size
+  const famMatch = fullText.match(/(?:family of|family size|members|உறுப்பினர்கள்)\s*(?:is|:)?\s*(\d{1,2})/i);
+  if (famMatch && famMatch[1]) {
+    profile.family_size = parseInt(famMatch[1], 10);
+  }
+
+  // Income extraction (e.g. 1.2 lakh, 150000, 80k, 50,000, 1.2L, 2.5L, 70 ஆயிரம்)
   if (/(\d+(?:\.\d+)?)\s*(?:lakh|lakhs|l|லட்சம்)/i.test(fullText)) {
     const lMatch = fullText.match(/(\d+(?:\.\d+)?)\s*(?:lakh|lakhs|l|லட்சம்)/i);
     if (lMatch) profile.annual_family_income = parseFloat(lMatch[1]) * 100000;

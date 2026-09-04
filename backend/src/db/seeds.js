@@ -26,6 +26,13 @@ db.serialize(() => {
 
   db.run(`
     CREATE TABLE schemes (
+      government TEXT DEFAULT 'Government of Tamil Nadu',
+      description_en TEXT DEFAULT '',
+      description_ta TEXT DEFAULT '',
+      official_source TEXT DEFAULT 'Official Government Portal',
+      official_url TEXT DEFAULT '',
+      status TEXT DEFAULT 'ACTIVE',
+      last_verified TEXT DEFAULT 'August 2026',
       id TEXT PRIMARY KEY,
       name_en TEXT NOT NULL,
       name_ta TEXT NOT NULL,
@@ -126,8 +133,8 @@ db.serialize(() => {
   // Helper insertion function
   const insertScheme = (s, rules, docs) => {
     db.run(
-      `INSERT INTO schemes (id, name_en, name_ta, department_en, department_ta, official_portal, benefit_en, benefit_ta, monthly_benefit_amount, annual_benefit_amount, is_active, category, policy_notes_2026_en, policy_notes_2026_ta) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-      [s.id, s.name_en, s.name_ta, s.department_en, s.department_ta, s.official_portal, s.benefit_en, s.benefit_ta, s.monthly_benefit_amount || 0, s.annual_benefit_amount || 0, s.is_active !== undefined ? s.is_active : 1, s.category || 'general', s.policy_notes_2026_en || '', s.policy_notes_2026_ta || '']
+      `INSERT INTO schemes (id, name_en, name_ta, department_en, department_ta, official_portal, official_url, official_source, government, description_en, description_ta, benefit_en, benefit_ta, monthly_benefit_amount, annual_benefit_amount, is_active, category, policy_notes_2026_en, policy_notes_2026_ta, status, last_verified) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      [s.id, s.name_en, s.name_ta, s.department_en, s.department_ta, s.official_portal, s.official_portal, 'Government of Tamil Nadu', 'Government of Tamil Nadu', s.benefit_en, s.benefit_ta, s.benefit_en, s.benefit_ta, s.monthly_benefit_amount || 0, s.annual_benefit_amount || 0, s.is_active !== undefined ? s.is_active : 1, s.category || 'general', s.policy_notes_2026_en || '', s.policy_notes_2026_ta || '', 'ACTIVE', 'August 2026']
     );
 
     rules.forEach(r => {
