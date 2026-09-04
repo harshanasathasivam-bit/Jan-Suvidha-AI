@@ -217,10 +217,10 @@ export function ProfileWizardPage() {
 
               <div>
                 <label style={{ display: 'block', fontSize: '0.85rem', color: '#94a3b8', marginBottom: '0.4rem', fontWeight: '500' }}>{t.genderLabel}</label>
-                <select className="chat-input" style={{ width: '100%', padding: '0.75rem' }} value={gender} onChange={(e) => setGender(e.target.value)}>
-                  <option value="female">Female (பெண்)</option>
-                  <option value="transgender">Transgender (திருநங்கை)</option>
-                  <option value="male">Male (ஆண்)</option>
+                <select className="chat-input" style={{ width: '100%', padding: '0.75rem', backgroundColor: '#0f172a', color: '#f8fafc' }} value={gender} onChange={(e) => setGender(e.target.value)}>
+                  <option style={{ backgroundColor: '#0f172a', color: '#f8fafc' }} value="female">Female (பெண்)</option>
+                  <option style={{ backgroundColor: '#0f172a', color: '#f8fafc' }} value="transgender">Transgender (திருநங்கை)</option>
+                  <option style={{ backgroundColor: '#0f172a', color: '#f8fafc' }} value="male">Male (ஆண்)</option>
                 </select>
               </div>
             </div>
@@ -233,14 +233,17 @@ export function ProfileWizardPage() {
 
               <div>
                 <label style={{ display: 'block', fontSize: '0.85rem', color: '#94a3b8', marginBottom: '0.4rem', fontWeight: '500' }}>{t.districtLabel}</label>
-                <select className="chat-input" style={{ width: '100%', padding: '0.75rem' }} value={district} onChange={(e) => setDistrict(e.target.value)}>
-                  <option value="Chennai">Chennai</option>
-                  <option value="Coimbatore">Coimbatore</option>
-                  <option value="Madurai">Madurai</option>
-                  <option value="Tiruchirappalli">Tiruchirappalli</option>
-                  <option value="Salem">Salem</option>
-                  <option value="Vellore">Vellore</option>
-                  <option value="Thanjavur">Thanjavur</option>
+                <select className="chat-input" style={{ width: '100%', padding: '0.75rem', backgroundColor: '#0f172a', color: '#f8fafc' }} value={district} onChange={(e) => setDistrict(e.target.value)}>
+                  <option style={{ backgroundColor: '#0f172a', color: '#f8fafc' }} value="Chennai">Chennai</option>
+                  <option style={{ backgroundColor: '#0f172a', color: '#f8fafc' }} value="Coimbatore">Coimbatore</option>
+                  <option style={{ backgroundColor: '#0f172a', color: '#f8fafc' }} value="Madurai">Madurai</option>
+                  <option style={{ backgroundColor: '#0f172a', color: '#f8fafc' }} value="Tiruchirappalli">Tiruchirappalli</option>
+                  <option style={{ backgroundColor: '#0f172a', color: '#f8fafc' }} value="Salem">Salem</option>
+                  <option style={{ backgroundColor: '#0f172a', color: '#f8fafc' }} value="Vellore">Vellore</option>
+                  <option style={{ backgroundColor: '#0f172a', color: '#f8fafc' }} value="Thanjavur">Thanjavur</option>
+                  <option style={{ backgroundColor: '#0f172a', color: '#f8fafc' }} value="Tirunelveli">Tirunelveli</option>
+                  <option style={{ backgroundColor: '#0f172a', color: '#f8fafc' }} value="Erode">Erode</option>
+                  <option style={{ backgroundColor: '#0f172a', color: '#f8fafc' }} value="Dindigul">Dindigul</option>
                 </select>
               </div>
             </div>
@@ -257,30 +260,30 @@ export function ProfileWizardPage() {
           <div>
             <div style={{ marginBottom: '1.25rem' }}>
               <label style={{ display: 'block', fontSize: '0.85rem', color: '#94a3b8', marginBottom: '0.4rem', fontWeight: '500' }}>{t.eduLevelLabel}</label>
-              <select className="chat-input" style={{ width: '100%', padding: '0.75rem' }} value={educationLevel} onChange={(e) => setEducationLevel(e.target.value)}>
-                <option value="12th_pass">12th Standard Passed / Studying</option>
-                <option value="degree">Undergraduate Degree (UG)</option>
-                <option value="diploma">Diploma Course</option>
-                <option value="iti">ITI Course</option>
-                <option value="10th_pass">10th Standard Passed</option>
+              <select className="chat-input" style={{ width: '100%', padding: '0.75rem', backgroundColor: '#0f172a', color: '#f8fafc' }} value={educationLevel} onChange={(e) => setEducationLevel(e.target.value)}>
+                <option style={{ backgroundColor: '#0f172a', color: '#f8fafc' }} value="12th_pass">12th Standard Passed / Studying</option>
+                <option style={{ backgroundColor: '#0f172a', color: '#f8fafc' }} value="degree">Undergraduate Degree (UG)</option>
+                <option style={{ backgroundColor: '#0f172a', color: '#f8fafc' }} value="diploma">Diploma Course</option>
+                <option style={{ backgroundColor: '#0f172a', color: '#f8fafc' }} value="iti">ITI Course</option>
+                <option style={{ backgroundColor: '#0f172a', color: '#f8fafc' }} value="10th_pass">10th Standard Passed</option>
               </select>
             </div>
 
             <div style={{ marginBottom: '1.25rem' }}>
               <label style={{ display: 'block', fontSize: '0.85rem', color: '#94a3b8', marginBottom: '0.4rem', fontWeight: '500' }}>{t.schoolTypeLabel}</label>
-              <select className="chat-input" style={{ width: '100%', padding: '0.75rem' }} value={schoolType} onChange={(e) => setSchoolType(e.target.value)}>
-                <option value="tn_govt_school">Tamil Nadu Government School (அரசு பள்ளி)</option>
-                <option value="tn_govt_aided_school">Tamil Nadu Government-Aided School (அரசு உதவிபெறும் பள்ளி)</option>
-                <option value="private_school">Private / Matriculation School</option>
+              <select className="chat-input" style={{ width: '100%', padding: '0.75rem', backgroundColor: '#0f172a', color: '#f8fafc' }} value={schoolType} onChange={(e) => setSchoolType(e.target.value)}>
+                <option style={{ backgroundColor: '#0f172a', color: '#f8fafc' }} value="tn_govt_school">Tamil Nadu Government School (அரசு பள்ளி)</option>
+                <option style={{ backgroundColor: '#0f172a', color: '#f8fafc' }} value="tn_govt_aided_school">Tamil Nadu Government-Aided School (அரசு உதவிபெறும் பள்ளி)</option>
+                <option style={{ backgroundColor: '#0f172a', color: '#f8fafc' }} value="private_school">Private / Matriculation School</option>
               </select>
             </div>
 
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginBottom: '1.5rem' }}>
               <div>
                 <label style={{ display: 'block', fontSize: '0.85rem', color: '#94a3b8', marginBottom: '0.4rem', fontWeight: '500' }}>{t.courseTypeLabel}</label>
-                <select className="chat-input" style={{ width: '100%', padding: '0.75rem' }} value={courseType} onChange={(e) => setCourseType(e.target.value)}>
-                  <option value="regular_higher_education">Regular Full-Time Course</option>
-                  <option value="distance">Distance / Correspondence</option>
+                <select className="chat-input" style={{ width: '100%', padding: '0.75rem', backgroundColor: '#0f172a', color: '#f8fafc' }} value={courseType} onChange={(e) => setCourseType(e.target.value)}>
+                  <option style={{ backgroundColor: '#0f172a', color: '#f8fafc' }} value="regular_higher_education">Regular Full-Time Course</option>
+                  <option style={{ backgroundColor: '#0f172a', color: '#f8fafc' }} value="distance">Distance / Correspondence</option>
                 </select>
               </div>
 
@@ -314,20 +317,20 @@ export function ProfileWizardPage() {
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginBottom: '1.25rem' }}>
               <div>
                 <label style={{ display: 'block', fontSize: '0.85rem', color: '#94a3b8', marginBottom: '0.4rem', fontWeight: '500' }}>{t.categoryLabel}</label>
-                <select className="chat-input" style={{ width: '100%', padding: '0.75rem' }} value={category} onChange={(e) => setCategory(e.target.value)}>
-                  <option value="OBC">BC / OBC</option>
-                  <option value="MBC">MBC / DNC</option>
-                  <option value="SC">SC / SC(A)</option>
-                  <option value="ST">ST</option>
-                  <option value="General">General / FC</option>
+                <select className="chat-input" style={{ width: '100%', padding: '0.75rem', backgroundColor: '#0f172a', color: '#f8fafc' }} value={category} onChange={(e) => setCategory(e.target.value)}>
+                  <option style={{ backgroundColor: '#0f172a', color: '#f8fafc' }} value="OBC">BC / OBC</option>
+                  <option style={{ backgroundColor: '#0f172a', color: '#f8fafc' }} value="MBC">MBC / DNC</option>
+                  <option style={{ backgroundColor: '#0f172a', color: '#f8fafc' }} value="SC">SC / SC(A)</option>
+                  <option style={{ backgroundColor: '#0f172a', color: '#f8fafc' }} value="ST">ST</option>
+                  <option style={{ backgroundColor: '#0f172a', color: '#f8fafc' }} value="General">General / FC</option>
                 </select>
               </div>
 
               <div>
                 <label style={{ display: 'block', fontSize: '0.85rem', color: '#94a3b8', marginBottom: '0.4rem', fontWeight: '500' }}>{t.disabilityLabel}</label>
-                <select className="chat-input" style={{ width: '100%', padding: '0.75rem' }} value={disability ? 'yes' : 'no'} onChange={(e) => setDisability(e.target.value === 'yes')}>
-                  <option value="no">No</option>
-                  <option value="yes">Yes (Differently Abled)</option>
+                <select className="chat-input" style={{ width: '100%', padding: '0.75rem', backgroundColor: '#0f172a', color: '#f8fafc' }} value={disability ? 'yes' : 'no'} onChange={(e) => setDisability(e.target.value === 'yes')}>
+                  <option style={{ backgroundColor: '#0f172a', color: '#f8fafc' }} value="no">No</option>
+                  <option style={{ backgroundColor: '#0f172a', color: '#f8fafc' }} value="yes">Yes (Differently Abled)</option>
                 </select>
               </div>
             </div>

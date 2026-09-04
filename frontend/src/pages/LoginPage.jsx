@@ -290,16 +290,20 @@ export function LoginPage() {
                     </label>
                     <select 
                       className="chat-input" 
-                      style={{ width: '100%', padding: '0.75rem' }}
+                      style={{ width: '100%', padding: '0.75rem', backgroundColor: '#0f172a', color: '#f8fafc' }}
                       value={district}
                       onChange={(e) => setDistrict(e.target.value)}
                     >
-                      <option value="Chennai">Chennai</option>
-                      <option value="Coimbatore">Coimbatore</option>
-                      <option value="Madurai">Madurai</option>
-                      <option value="Tiruchirappalli">Tiruchirappalli</option>
-                      <option value="Salem">Salem</option>
-                      <option value="Vellore">Vellore</option>
+                      <option style={{ backgroundColor: '#0f172a', color: '#f8fafc' }} value="Chennai">Chennai</option>
+                      <option style={{ backgroundColor: '#0f172a', color: '#f8fafc' }} value="Coimbatore">Coimbatore</option>
+                      <option style={{ backgroundColor: '#0f172a', color: '#f8fafc' }} value="Madurai">Madurai</option>
+                      <option style={{ backgroundColor: '#0f172a', color: '#f8fafc' }} value="Tiruchirappalli">Tiruchirappalli</option>
+                      <option style={{ backgroundColor: '#0f172a', color: '#f8fafc' }} value="Salem">Salem</option>
+                      <option style={{ backgroundColor: '#0f172a', color: '#f8fafc' }} value="Vellore">Vellore</option>
+                      <option style={{ backgroundColor: '#0f172a', color: '#f8fafc' }} value="Thanjavur">Thanjavur</option>
+                      <option style={{ backgroundColor: '#0f172a', color: '#f8fafc' }} value="Tirunelveli">Tirunelveli</option>
+                      <option style={{ backgroundColor: '#0f172a', color: '#f8fafc' }} value="Erode">Erode</option>
+                      <option style={{ backgroundColor: '#0f172a', color: '#f8fafc' }} value="Dindigul">Dindigul</option>
                     </select>
                   </div>
 
