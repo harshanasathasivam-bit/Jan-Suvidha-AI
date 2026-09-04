@@ -1,13 +1,14 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { translations } from '../utils/translations';
 import { getApiUrl } from '../utils/api';
+import { evaluateClientSchemes } from '../utils/clientSchemeEngine';
 
 const AppContext = createContext();
 
 export function AppProvider({ children }) {
   const [lang, setLang] = useState('en');
   const [activeTab, setActiveTab] = useState('landing');
-  
+
   // Auth & Profile state
   const [token, setToken] = useState(localStorage.getItem('jan_suvidha_token') || null);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -45,8 +46,8 @@ export function AppProvider({ children }) {
     {
       id: 1,
       sender: 'bot',
-      text: lang === 'ta' 
-        ? 'வணக்கம்! நான் ஜன் சுவிதா AI. உங்கள் தொழில், வயது, குடும்ப வருமானம் மற்றும் தேவைகளைக் கூறுங்கள். உங்களுக்குப் பொருத்தமான தமிழ்நாடு மற்றும் மத்திய அரசு நலத்திட்டங்களை உடனடியாகக் கண்டறிந்து தருகிறேன்.' 
+      text: lang === 'ta'
+        ? 'வணக்கம்! நான் ஜன் சுவிதா AI. உங்கள் தொழில், வயது, குடும்ப வருமானம் மற்றும் தேவைகளைக் கூறுங்கள். உங்களுக்குப் பொருத்தமான தமிழ்நாடு மற்றும் மத்திய அரசு நலத்திட்டங்களை உடனடியாகக் கண்டறிந்து தருகிறேன்.'
         : 'Hello! I am Jan Suvidha AI. Tell me about your occupation, age, annual income, and welfare needs. I will evaluate grounded eligibility across official schemes.'
     }
   ]);
@@ -182,6 +183,10 @@ export function AppProvider({ children }) {
     const updated = { ...profile, ...newProfileFields };
     setProfile(updated);
 
+    // Instant grounded client-side evaluation fallback
+    const clientMatches = evaluateClientSchemes(updated);
+    setSchemeMatches(clientMatches);
+
     try {
       setLoadingMatches(true);
       const res = await fetch(getApiUrl('/api/match'), {
@@ -190,14 +195,11 @@ export function AppProvider({ children }) {
         body: JSON.stringify({ profile: updated })
       });
       const data = await res.json();
-      if (data.success && data.schemes) {
-        setSchemeMatches(data.schemes);
-        if (data.schemes.length > 0 && !selectedSchemeId) {
-          setSelectedSchemeId(data.schemes[0].schemeId);
-        }
+      if (data.success) {
+        setSchemeMatches(data.schemes || []);
       }
     } catch (err) {
-      console.warn('Error fetching scheme matches:', err);
+      console.warn('Error fetching backend scheme matches, utilizing client engine matches:', err);
     } finally {
       setLoadingMatches(false);
     }
