@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useApp } from '../context/AppContext';
 import { UserCheck, ShieldAlert, CheckCircle2, ArrowRight, ArrowLeft, Save, Sparkles, BookOpen, Users, DollarSign } from 'lucide-react';
+import { getApiUrl } from '../utils/api';
 
 export function ProfileWizardPage() {
   const { lang, t, token, currentUser, profileCompleted, setProfileCompleted, setSchemeMatches, updateProfileAndMatch, setActiveTab } = useApp();
@@ -30,7 +31,7 @@ export function ProfileWizardPage() {
   // Pre-fill existing profile if available
   useEffect(() => {
     if (token) {
-      fetch('/api/profile', {
+      fetch(getApiUrl('/api/profile'), {
         headers: { Authorization: `Bearer ${token}` }
       })
         .then(r => r.json())
@@ -101,7 +102,7 @@ export function ProfileWizardPage() {
     };
 
     try {
-      const res = await fetch('/api/profile', {
+      const res = await fetch(getApiUrl('/api/profile'), {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

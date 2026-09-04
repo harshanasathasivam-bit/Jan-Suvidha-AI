@@ -11,8 +11,11 @@ import {
   Home, 
   Users, 
   CreditCard, 
-  MapPin
+  MapPin,
+  Sparkles,
+  CheckCircle2
 } from 'lucide-react';
+import { getApiUrl } from '../utils/api';
 
 export function ChatProfilePage() {
   const { 
@@ -48,7 +51,7 @@ export function ChatProfilePage() {
     setLoading(true);
 
     try {
-      const res = await fetch('/api/profile', {
+      const res = await fetch(getApiUrl('/api/profile'), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ messages: updatedMessages, currentProfile: profile })

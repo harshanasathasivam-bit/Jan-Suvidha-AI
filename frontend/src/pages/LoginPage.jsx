@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useApp } from '../context/AppContext';
 import { Mail, Lock, User, MapPin, KeyRound, CheckCircle2, ArrowRight, ShieldCheck, RefreshCw, AlertCircle } from 'lucide-react';
+import { getApiUrl } from '../utils/api';
 
 export function LoginPage() {
   const { lang, t, loginWithToken, authMode, setAuthMode } = useApp();
@@ -49,7 +50,7 @@ export function LoginPage() {
 
     try {
       if (mode === 'register') {
-        const res = await fetch('/api/auth/register', {
+        const res = await fetch(getApiUrl('/api/auth/register'), {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ name, email, password, district, income: Number(income) })
@@ -67,7 +68,7 @@ export function LoginPage() {
         setCooldown(60);
       } else {
         // Login Flow
-        const res = await fetch('/api/auth/login', {
+        const res = await fetch(getApiUrl('/api/auth/login'), {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ email, password })
@@ -101,7 +102,7 @@ export function LoginPage() {
 
     try {
       const endpoint = step === 'verify_email' ? '/api/auth/verify-email' : '/api/auth/verify-login';
-      const res = await fetch(endpoint, {
+      const res = await fetch(getApiUrl(endpoint), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, code: code.trim() })
@@ -131,7 +132,7 @@ export function LoginPage() {
 
     try {
       const purpose = step === 'verify_email' ? 'register' : 'login';
-      const res = await fetch('/api/auth/resend-code', {
+      const res = await fetch(getApiUrl('/api/auth/resend-code'), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, purpose })

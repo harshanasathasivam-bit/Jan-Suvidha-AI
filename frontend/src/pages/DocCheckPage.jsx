@@ -10,8 +10,10 @@ import {
   ArrowRight, 
   ShieldCheck, 
   ShieldAlert,
-  Circle
+  Circle,
+  AlertCircle
 } from 'lucide-react';
+import { getApiUrl } from '../utils/api';
 
 export function DocCheckPage() {
   const { 
@@ -60,7 +62,7 @@ export function DocCheckPage() {
     formData.append('document', file);
 
     try {
-      const res = await fetch('/api/document-check', {
+      const res = await fetch(getApiUrl('/api/document-check'), {
         method: 'POST',
         body: formData
       });

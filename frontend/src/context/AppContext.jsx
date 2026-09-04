@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { translations } from '../utils/translations';
+import { getApiUrl } from '../utils/api';
 
 const AppContext = createContext();
 
@@ -140,7 +141,7 @@ export function AppProvider({ children }) {
   useEffect(() => {
     const savedToken = localStorage.getItem('jan_suvidha_token');
     if (savedToken) {
-      fetch('/api/auth/me', {
+      fetch(getApiUrl('/api/auth/me'), {
         headers: { Authorization: `Bearer ${savedToken}` }
       })
         .then(r => r.json())
@@ -183,7 +184,7 @@ export function AppProvider({ children }) {
 
     try {
       setLoadingMatches(true);
-      const res = await fetch('/api/match', {
+      const res = await fetch(getApiUrl('/api/match'), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ profile: updated })

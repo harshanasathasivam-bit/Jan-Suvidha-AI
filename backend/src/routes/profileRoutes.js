@@ -1,18 +1,9 @@
 import express from 'express';
-import sqlite3 from 'sqlite3';
-import path from 'path';
-import { fileURLToPath } from 'url';
+import { getDb } from '../db/getDb.js';
 import { verifyToken, getUserById } from '../services/authService.js';
 import { matchProfileToSchemes } from '../services/eligibilityEngine.js';
 
 const router = express.Router();
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-const dbPath = path.join(__dirname, '../db/database.sqlite');
-
-function getDb() {
-  return new sqlite3.Database(dbPath);
-}
 
 // Middleware: Verify JWT Authorization header
 function authenticate(req, res, next) {
