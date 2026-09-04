@@ -48,6 +48,45 @@ router.get('/', authenticate, (req, res) => {
   });
 });
 
+// GET /api/profile/recommendations — Compute scheme matches for saved user profile
+router.get('/recommendations', authenticate, (req, res) => {
+  const db = getDb();
+  db.get(`SELECT * FROM profiles WHERE user_id = ?`, [req.userId], async (err, profileRow) => {
+    db.close();
+    if (err) {
+      return res.status(500).json({ error: 'Database error fetching profile', details: err.message });
+    }
+    if (!profileRow) {
+      return res.status(404).json({ error: 'No profile found for user. Please complete profile setup.' });
+    }
+
+    const engineProfile = {
+      age: Number(profileRow.age),
+      gender: profileRow.gender,
+      category: profileRow.category || 'General',
+      annual_family_income: Number(profileRow.annual_family_income),
+      school_type_6_to_12: profileRow.school_type_6_to_12 || 'tn_govt_school',
+      education_course_type: profileRow.education_course_type || 'regular_higher_education',
+      education_level: profileRow.education_level || '12th_pass',
+      previous_exam_marks_pct: Number(profileRow.last_exam_marks_pct) || 60,
+      ration_card_head: profileRow.ration_card_head ? 1 : 0,
+      ration_card_holder: profileRow.ration_card_holder ? 1 : 0,
+      disability_status: profileRow.disability_status ? 1 : 0,
+      is_first_graduate: profileRow.is_first_graduate ? 1 : 0,
+      ex_serviceman_child: profileRow.ex_serviceman_child ? 1 : 0,
+      state_domicile: 'tamil_nadu',
+      district: profileRow.district
+    };
+
+    const schemeMatches = await matchProfileToSchemes(engineProfile);
+    res.json({
+      success: true,
+      profile: profileRow,
+      schemes: schemeMatches
+    });
+  });
+});
+
 // 2. POST /api/profile — Create or update user profile, set profile_completed = 1, return matches
 router.post('/', authenticate, async (req, res) => {
   try {
@@ -65,7 +104,9 @@ router.post('/', authenticate, async (req, res) => {
       ration_card_head,
       ration_card_holder,
       category,
-      disability_status
+      disability_status,
+      is_first_graduate,
+      ex_serviceman_child
     } = req.body;
 
     // Required fields validation
@@ -86,6 +127,8 @@ router.post('/', authenticate, async (req, res) => {
       const isHead = ration_card_head ? 1 : 0;
       const isHolder = ration_card_holder !== undefined ? (ration_card_holder ? 1 : 0) : 1;
       const isDisabled = disability_status ? 1 : 0;
+      const isFirstGrad = is_first_graduate ? 1 : 0;
+      const isExServ = ex_serviceman_child ? 1 : 0;
 
       if (existing) {
         // UPDATE profile
@@ -94,13 +137,13 @@ router.post('/', authenticate, async (req, res) => {
             full_name = ?, age = ?, gender = ?, mobile_number = ?, district = ?, 
             education_level = ?, school_type_6_to_12 = ?, education_course_type = ?, 
             last_exam_marks_pct = ?, annual_family_income = ?, ration_card_head = ?, 
-            ration_card_holder = ?, category = ?, disability_status = ?, updated_at = CURRENT_TIMESTAMP 
+            ration_card_holder = ?, category = ?, disability_status = ?, is_first_graduate = ?, ex_serviceman_child = ?, updated_at = CURRENT_TIMESTAMP 
            WHERE user_id = ?`,
           [
             full_name, Number(age), gender, mobile_number || '', district,
             education_level || '12th_pass', school_type_6_to_12 || 'tn_govt_school', education_course_type || 'regular_higher_education',
             Number(last_exam_marks_pct) || 60, Number(annual_family_income), isHead,
-            isHolder, category || 'General', isDisabled, userId
+            isHolder, category || 'General', isDisabled, isFirstGrad, isExServ, userId
           ],
           async (uErr) => {
             if (uErr) {
@@ -117,13 +160,13 @@ router.post('/', authenticate, async (req, res) => {
             user_id, full_name, age, gender, mobile_number, district, 
             education_level, school_type_6_to_12, education_course_type, 
             last_exam_marks_pct, annual_family_income, ration_card_head, 
-            ration_card_holder, category, disability_status
-          ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+            ration_card_holder, category, disability_status, is_first_graduate, ex_serviceman_child
+          ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
           [
             userId, full_name, Number(age), gender, mobile_number || '', district,
             education_level || '12th_pass', school_type_6_to_12 || 'tn_govt_school', education_course_type || 'regular_higher_education',
             Number(last_exam_marks_pct) || 60, Number(annual_family_income), isHead,
-            isHolder, category || 'General', isDisabled
+            isHolder, category || 'General', isDisabled, isFirstGrad, isExServ
           ],
           async (iErr) => {
             if (iErr) {
@@ -149,13 +192,17 @@ async function finalizeProfile(db, userId, rawBody, res) {
     const engineProfile = {
       age: Number(rawBody.age),
       gender: rawBody.gender,
+      category: rawBody.category || 'General',
       annual_family_income: Number(rawBody.annual_family_income),
       school_type_6_to_12: rawBody.school_type_6_to_12 || 'tn_govt_school',
       education_course_type: rawBody.education_course_type || 'regular_higher_education',
       education_level: rawBody.education_level || '12th_pass',
       previous_exam_marks_pct: Number(rawBody.last_exam_marks_pct) || 60,
-      ration_card_head: rawBody.ration_card_head ? true : false,
-      ration_card_holder: rawBody.ration_card_holder !== undefined ? (rawBody.ration_card_holder ? true : false) : true,
+      ration_card_head: rawBody.ration_card_head ? 1 : 0,
+      ration_card_holder: rawBody.ration_card_holder !== undefined ? (rawBody.ration_card_holder ? 1 : 0) : 1,
+      disability_status: rawBody.disability_status ? 1 : 0,
+      is_first_graduate: rawBody.is_first_graduate ? 1 : 0,
+      ex_serviceman_child: rawBody.ex_serviceman_child ? 1 : 0,
       state_domicile: 'tamil_nadu',
       district: rawBody.district
     };

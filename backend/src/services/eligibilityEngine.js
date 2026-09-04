@@ -56,19 +56,32 @@ export async function matchProfileToSchemes(profile) {
             isMissing = true;
           } else {
             switch (rule.operator) {
-              case 'EQUALS':
-                isPassed = String(userVal).toLowerCase() === String(rule.field_value).toLowerCase();
+              case 'EQUALS': {
+                const normUser = String(userVal).trim().toLowerCase();
+                const normRule = String(rule.field_value).trim().toLowerCase();
+                const isUserTruthy = normUser === '1' || normUser === 'true' || normUser === 'yes';
+                const isRuleTruthy = normRule === '1' || normRule === 'true' || normRule === 'yes';
+                const isUserFalsy = normUser === '0' || normUser === 'false' || normUser === 'no';
+                const isRuleFalsy = normRule === '0' || normRule === 'false' || normRule === 'no';
+
+                if ((isUserTruthy && isRuleTruthy) || (isUserFalsy && isRuleFalsy)) {
+                  isPassed = true;
+                } else {
+                  isPassed = normUser === normRule;
+                }
                 break;
+              }
               case 'GTE':
                 isPassed = Number(userVal) >= Number(rule.field_value);
                 break;
               case 'LTE':
                 isPassed = Number(userVal) <= Number(rule.field_value);
                 break;
-              case 'IN':
+              case 'IN': {
                 const allowed = rule.field_value.split(',').map(s => s.trim().toLowerCase());
-                isPassed = allowed.includes(String(userVal).toLowerCase());
+                isPassed = allowed.includes(String(userVal).trim().toLowerCase());
                 break;
+              }
               default:
                 isPassed = false;
             }
