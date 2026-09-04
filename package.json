@@ -1,0 +1,12 @@
+{
+  "name": "jan-suvidha-ai-monorepo",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "build": "npm run install:all && npm run build:frontend && npm run seed:backend",
+    "install:all": "cd backend && npm install && cd ../frontend && npm install",
+    "build:frontend": "cd frontend && npm run build",
+    "seed:backend": "cd backend && npm run seed",
+    "start": "cd backend && npm start"
+  }
+}
