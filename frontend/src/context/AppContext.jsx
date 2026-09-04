@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { translations } from '../utils/translations';
 import { getApiUrl } from '../utils/api';
+import { evaluateClientSchemes } from '../utils/clientSchemeEngine';
 
 const AppContext = createContext();
 
@@ -127,6 +128,10 @@ export function AppProvider({ children }) {
     const updated = { ...profile, ...newProfileFields };
     setProfile(updated);
 
+    // Instant grounded client-side evaluation fallback
+    const clientMatches = evaluateClientSchemes(updated);
+    setSchemeMatches(clientMatches);
+
     try {
       setLoadingMatches(true);
       const res = await fetch(getApiUrl('/api/match'), {
@@ -135,11 +140,11 @@ export function AppProvider({ children }) {
         body: JSON.stringify({ profile: updated })
       });
       const data = await res.json();
-      if (data.success) {
-        setSchemeMatches(data.schemes || []);
+      if (data.success && Array.isArray(data.schemes) && data.schemes.length > 0) {
+        setSchemeMatches(data.schemes);
       }
     } catch (err) {
-      console.warn('Error fetching scheme matches:', err);
+      console.warn('Error fetching backend scheme matches, utilizing client engine matches:', err);
     } finally {
       setLoadingMatches(false);
     }
