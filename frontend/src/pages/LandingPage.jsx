@@ -15,11 +15,31 @@ import {
   AlertCircle,
   Sprout,
   LogIn,
-  LayoutDashboard
+  LayoutDashboard,
+  PlayCircle
 } from 'lucide-react';
 
 export function LandingPage() {
-  const { t, lang, setActiveTab, allSchemes, isLoggedIn, setAuthMode } = useApp();
+  const { t, lang, setActiveTab, allSchemes, isLoggedIn, setAuthMode, updateProfileAndMatch } = useApp();
+
+  const handleTryFarmerDemo = () => {
+    const demoFarmer = {
+      name: 'Murugan (Farmer Demo)',
+      age: 45,
+      gender: 'male',
+      occupation: 'farmer',
+      annual_family_income: 120000,
+      family_size: 4,
+      state_domicile: 'tamil_nadu',
+      district: 'Thanjavur',
+      ration_card_head: true,
+      ration_card_holder: true,
+      owns_pucca_house: false,
+      owns_four_wheeler: false
+    };
+    updateProfileAndMatch(demoFarmer);
+    setActiveTab('results');
+  };
 
   const getCategoryIcon = (category) => {
     switch (category) {
@@ -59,6 +79,29 @@ export function LandingPage() {
           <button className="btn-secondary" onClick={() => setActiveTab('results')}>
             <Search size={18} />
             <span>{t.secondaryCta}</span>
+          </button>
+
+          <button 
+            className="btn-demo"
+            onClick={handleTryFarmerDemo}
+            title="Instant Deterministic Demo: 45-year-old Tamil Nadu Farmer (Income ₹1,20,000)"
+            style={{
+              background: 'linear-gradient(135deg, #059669 0%, #10b981 100%)',
+              color: '#ffffff',
+              border: '1px solid rgba(16, 185, 129, 0.4)',
+              fontWeight: '600',
+              padding: '0.75rem 1.4rem',
+              borderRadius: '9999px',
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '0.5rem',
+              cursor: 'pointer',
+              boxShadow: '0 4px 15px rgba(16, 185, 129, 0.35)',
+              transition: 'all 0.2s ease'
+            }}
+          >
+            <PlayCircle size={18} />
+            <span>TRY DEMO</span>
           </button>
         </div>
 

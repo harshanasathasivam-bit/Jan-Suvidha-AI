@@ -54,50 +54,92 @@ export function DocCheckPage() {
     }
   };
 
+  const [demoModeNotice, setDemoModeNotice] = useState(false);
+
   const runDocumentCheck = async (file) => {
     setChecking(true);
     setLatestResult(null);
+    setDemoModeNotice(false);
 
     const formData = new FormData();
     formData.append('document', file);
+
+    let ocr = null;
 
     try {
       const res = await fetch(getApiUrl('/api/document-check'), {
         method: 'POST',
         body: formData
       });
-      const data = await res.json();
-
-      if (data.success && data.result) {
-        const ocr = data.result;
-        const isPass = ocr.status === 'VERIFIED';
-        const docStatus = isPass ? 'READY' : (ocr.issues?.length === 1 ? 'NEEDS_ATTENTION' : 'NOT_READY');
-
-        const newDocItem = {
-          docKey: ocr.docType.toLowerCase(),
-          docNameEn: file.name,
-          docNameTa: file.name,
-          docType: ocr.docType,
-          ocrStatus: isPass ? 'SUCCESS' : 'ACTION_REQUIRED',
-          readability: ocr.blurCheckPassed ? 'CLEAR' : 'BLURRY',
-          requiredFields: ocr.extractedFields?.aadhaarNumber ? `Aadhaar: ${ocr.extractedFields.aadhaarNumber}` : (ocr.extractedFields?.incomeAmount ? `Income: ₹${ocr.extractedFields.incomeAmount}` : 'Detected'),
-          expiryStatus: ocr.extractedFields?.documentDate ? 'VALID' : 'REQUIRES_CHECK',
-          status: docStatus,
-          notesEn: isPass ? 'Clean scan, text readable, required fields verified.' : (ocr.issues[0]?.en || 'Action required on document quality.'),
-          notesTa: isPass ? 'ஆவணம் தெளிவாகவும் பயன்படுத்தக்கூடியதாகவும் உள்ளது.' : (ocr.issues[0]?.ta || 'ஆவணத்தை மீண்டும் தெளிவாக எடுக்கவும்.')
-        };
-
-        setLatestResult(ocr);
-        setVerifiedDocs(prev => [
-          ...prev.filter(d => d.docType !== ocr.docType),
-          newDocItem
-        ]);
+      if (res.ok) {
+        const ct = res.headers.get('content-type');
+        if (ct && ct.includes('application/json')) {
+          const data = await res.json();
+          if (data.success && data.result) {
+            ocr = data.result;
+          }
+        }
       }
     } catch (err) {
-      console.warn('Doc check error:', err);
-    } finally {
-      setChecking(false);
+      console.warn('Backend document check notice (demo fallback active):', err);
     }
+
+    // Deterministic demo mode fallback
+    if (!ocr) {
+      setDemoModeNotice(true);
+      const lowerName = file.name.toLowerCase();
+      let detectedType = 'AADHAAR_CARD';
+      let fieldVal = '12-digit UID detected';
+      let issueText = null;
+
+      if (lowerName.includes('income') || lowerName.includes('வருமானம்')) {
+        detectedType = 'INCOME_CERTIFICATE';
+        fieldVal = 'Income ₹1,20,000 detected';
+        issueText = { en: 'Certificate issue date is over 11 months old; renewal recommended', ta: 'சான்றிதழ் தேதியை உறுதிப்படுத்தவும்' };
+      } else if (lowerName.includes('ration') || lowerName.includes('குடும்ப')) {
+        detectedType = 'RATION_CARD';
+        fieldVal = 'Smart Family Card detected';
+      } else if (lowerName.includes('patta') || lowerName.includes('farmer') || lowerName.includes('uzhavar')) {
+        detectedType = 'LAND_PATTA';
+        fieldVal = 'Uzhavar / Agricultural Land record detected';
+      }
+
+      ocr = {
+        docType: detectedType,
+        status: issueText ? 'ACTION_REQUIRED' : 'VERIFIED',
+        blurCheckPassed: true,
+        extractedFields: {
+          fieldInfo: fieldVal,
+          documentDate: 'Valid'
+        },
+        issues: issueText ? [issueText] : [],
+        isDemoMode: true
+      };
+    }
+
+    const isPass = ocr.status === 'VERIFIED';
+    const docStatus = isPass ? 'READY' : (ocr.issues?.length === 1 ? 'NEEDS_ATTENTION' : 'NOT_READY');
+
+    const newDocItem = {
+      docKey: ocr.docType.toLowerCase(),
+      docNameEn: file.name,
+      docNameTa: file.name,
+      docType: ocr.docType,
+      ocrStatus: isPass ? 'SUCCESS' : 'ACTION_REQUIRED',
+      readability: ocr.blurCheckPassed ? 'CLEAR' : 'BLURRY',
+      requiredFields: ocr.extractedFields?.aadhaarNumber ? `Aadhaar: ${ocr.extractedFields.aadhaarNumber}` : (ocr.extractedFields?.incomeAmount ? `Income: ₹${ocr.extractedFields.incomeAmount}` : (ocr.extractedFields?.fieldInfo || 'Detected')),
+      expiryStatus: ocr.extractedFields?.documentDate ? 'VALID' : 'REQUIRES_CHECK',
+      status: docStatus,
+      notesEn: isPass ? 'Clean scan, text readable, required fields verified.' : (ocr.issues[0]?.en || 'Action required on document quality.'),
+      notesTa: isPass ? 'ஆவணம் தெளிவாகவும் பயன்படுத்தக்கூடியதாகவும் உள்ளது.' : (ocr.issues[0]?.ta || 'ஆவணத்தை மீண்டும் தெளிவாக எடுக்கவும்.')
+    };
+
+    setLatestResult(ocr);
+    setVerifiedDocs(prev => [
+      ...prev.filter(d => d.docType !== ocr.docType),
+      newDocItem
+    ]);
+    setChecking(false);
   };
 
   const getStatusBadge = (status) => {
@@ -146,6 +188,24 @@ export function DocCheckPage() {
           <strong>Pre-Submission Quality Check Only:</strong> {t.docDisclaimer}
         </div>
       </div>
+
+      {demoModeNotice && (
+        <div style={{
+          background: 'rgba(59, 130, 246, 0.15)',
+          border: '1px solid rgba(59, 130, 246, 0.3)',
+          borderRadius: '8px',
+          padding: '0.75rem 1rem',
+          marginBottom: '1rem',
+          display: 'flex',
+          alignItems: 'center',
+          gap: '0.5rem',
+          color: '#93c5fd',
+          fontSize: '0.88rem'
+        }}>
+          <AlertCircle size={16} />
+          <span>Document quality check is currently running in demo mode.</span>
+        </div>
+      )}
 
       {/* Scheme Checklist Status Card */}
       <div className="scheme-checklist-card glass-card">

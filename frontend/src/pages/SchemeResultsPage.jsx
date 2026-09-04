@@ -21,6 +21,7 @@ import {
   UserCheck,
   X
 } from 'lucide-react';
+import { evaluateClientSchemes } from '../utils/clientSchemeEngine';
 
 export function SchemeResultsPage() {
   const { 
@@ -64,6 +65,14 @@ export function SchemeResultsPage() {
     const cat = scheme.category || '';
     return matchesCat && (name.toLowerCase().includes(q) || dept.toLowerCase().includes(q) || benefit.toLowerCase().includes(q) || cat.toLowerCase().includes(q));
   });
+
+  const allAvailable = schemeMatches.length > 0 ? schemeMatches : evaluateClientSchemes();
+  const listToRender = filteredMatches.length > 0
+    ? filteredMatches
+    : (selectedCategory !== 'All'
+        ? allAvailable.filter(s => s.category === selectedCategory)
+        : allAvailable);
+  const isFallbackDiscovery = filteredMatches.length === 0 && listToRender.length > 0;
 
   const getCategoryIcon = (category) => {
     switch (category) {
@@ -152,20 +161,35 @@ export function SchemeResultsPage() {
             Evaluating citizen profile against official government eligibility rules...
           </p>
         </div>
-      ) : filteredMatches.length === 0 ? (
-        <div className="glass-card" style={{ textAlign: 'center', padding: '3rem 1rem' }}>
-          <p style={{ color: '#94a3b8', fontSize: '1.1rem' }}>No schemes found matching your search and filter criteria.</p>
-          <button className="btn-secondary" style={{ marginTop: '1rem' }} onClick={() => { setSelectedCategory('All'); setSearchQuery(''); }}>
-            Reset Filters
-          </button>
-        </div>
       ) : (
         /* Schemes List with Explainable Breakdown Cards */
         <div className="schemes-list">
-          {filteredMatches.map((scheme) => {
+          {isFallbackDiscovery && (
+            <div style={{
+              background: 'rgba(234, 179, 8, 0.12)',
+              border: '1px solid rgba(234, 179, 8, 0.35)',
+              borderRadius: '10px',
+              padding: '1rem',
+              marginBottom: '1.25rem',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '0.75rem',
+              color: '#fde047'
+            }}>
+              <AlertTriangle size={20} style={{ flexShrink: 0 }} />
+              <div>
+                <strong>Based on the information provided, here are schemes worth checking:</strong>
+                <p style={{ margin: '0.25rem 0 0', fontSize: '0.85rem', color: '#fef08a' }}>
+                  Potential matches displayed below. Some eligibility information is still missing.
+                </p>
+              </div>
+            </div>
+          )}
+
+          {listToRender.map((scheme) => {
             const isExpanded = expandedSchemeId === scheme.schemeId;
             const isEligible = scheme.status === 'ELIGIBLE';
-            const isPartial = scheme.status === 'PARTIALLY_ELIGIBLE';
+            const isPartial = scheme.status === 'PARTIALLY_ELIGIBLE' || isFallbackDiscovery;
             const totalDocs = scheme.requiredDocuments?.length || 3;
             const docsReady = Math.min(readyDocsCount, totalDocs);
 
@@ -316,7 +340,7 @@ export function SchemeResultsPage() {
                     className="btn-text-toggle"
                     onClick={() => toggleExpand(scheme.schemeId)}
                   >
-                    <span>{isExpanded ? 'Hide Details' : t.seeWhyBtn}</span>
+                    <span>{isExpanded ? (lang === 'ta' ? 'விவரங்களை மறை' : 'Hide Details') : (lang === 'ta' ? 'விவரங்களைக் காண்க' : 'VIEW DETAILS')}</span>
                     {isExpanded ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
                   </button>
 
@@ -326,7 +350,7 @@ export function SchemeResultsPage() {
                       onClick={() => handleCheckDocs(scheme.schemeId)}
                     >
                       <FileText size={15} />
-                      <span>{t.checkDocsBtn}</span>
+                      <span>{lang === 'ta' ? 'ஆவணங்களைச் சரிபார்க்கவும்' : 'CHECK DOCUMENTS'}</span>
                     </button>
 
                     <a 
@@ -336,7 +360,7 @@ export function SchemeResultsPage() {
                       className="btn-official-source small"
                       title="Open verified official government portal in a new tab"
                     >
-                      <span>{t.viewOfficialSource}</span>
+                      <span>{lang === 'ta' ? 'அரசு இணையதளம்' : 'OFFICIAL PORTAL'}</span>
                       <ExternalLink size={14} />
                     </a>
                   </div>
