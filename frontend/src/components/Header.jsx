@@ -1,9 +1,28 @@
 import React from 'react';
 import { useApp } from '../context/AppContext';
-import { Globe, ShieldCheck, Home, MessageSquare, Award, FileText, CheckCircle2 } from 'lucide-react';
+import { 
+  Globe, 
+  MessageSquare, 
+  Award, 
+  FileCheck, 
+  ClipboardCheck, 
+  UserCheck, 
+  LayoutDashboard, 
+  UserPlus, 
+  LogIn 
+} from 'lucide-react';
 
 export function Header() {
-  const { lang, toggleLanguage, t, activeTab, setActiveTab, schemeMatches } = useApp();
+  const { 
+    lang, 
+    toggleLanguage, 
+    t, 
+    activeTab, 
+    setActiveTab, 
+    schemeMatches,
+    isLoggedIn,
+    setAuthMode
+  } = useApp();
 
   const eligibleCount = schemeMatches.filter(s => s.status === 'ELIGIBLE').length;
 
@@ -57,7 +76,7 @@ export function Header() {
             </button>
           </nav>
 
-          {/* Language Switch */}
+          {/* Controls: Language and Auth */}
           <div className="nav-controls">
             <button className="lang-btn" onClick={toggleLanguage} title="Switch Language / மொழியை மாற்றவும்">
               <Globe size={15} />
@@ -66,12 +85,20 @@ export function Header() {
 
             {isLoggedIn ? (
               <div style={{ display: 'flex', gap: '0.5rem' }}>
-                <button className="lang-btn" style={{ background: 'rgba(37, 99, 235, 0.2)', borderColor: 'rgba(37, 99, 235, 0.4)', color: '#60a5fa' }} onClick={() => setActiveTab('profile-wizard')}>
+                <button 
+                  className="lang-btn" 
+                  style={{ background: 'rgba(37, 99, 235, 0.2)', borderColor: 'rgba(37, 99, 235, 0.4)', color: '#60a5fa' }} 
+                  onClick={() => setActiveTab('profile-wizard')}
+                >
                   <UserCheck size={16} />
                   <span>{t.navProfile}</span>
                 </button>
 
-                <button className="lang-btn" style={{ background: 'rgba(5, 150, 105, 0.2)', borderColor: 'rgba(5, 150, 105, 0.4)', color: '#34d399' }} onClick={() => setActiveTab('dashboard')}>
+                <button 
+                  className="lang-btn" 
+                  style={{ background: 'rgba(5, 150, 105, 0.2)', borderColor: 'rgba(5, 150, 105, 0.4)', color: '#34d399' }} 
+                  onClick={() => setActiveTab('dashboard')}
+                >
                   <LayoutDashboard size={16} />
                   <span>{t.navDashboard}</span>
                 </button>
@@ -100,42 +127,6 @@ export function Header() {
           </div>
         </div>
       </div>
-
-      {activeTab !== 'landing' && (
-        <div className="stepper-bar">
-          <div 
-            className={`step-item ${activeTab === 'chat' ? 'active' : ''}`}
-            onClick={() => setActiveTab('chat')}
-          >
-            <span className="step-num">1</span>
-            <span>{t.navChat}</span>
-          </div>
-
-          <div 
-            className={`step-item ${activeTab === 'results' ? 'active' : ''}`}
-            onClick={() => setActiveTab('results')}
-          >
-            <span className="step-num">2</span>
-            <span>{t.navResults} ({eligibleCount})</span>
-          </div>
-
-          <div 
-            className={`step-item ${activeTab === 'docs' ? 'active' : ''}`}
-            onClick={() => setActiveTab('docs')}
-          >
-            <span className="step-num">3</span>
-            <span>{t.navDocs}</span>
-          </div>
-
-          <div 
-            className={`step-item ${activeTab === 'checklist' ? 'active' : ''}`}
-            onClick={() => setActiveTab('checklist')}
-          >
-            <span className="step-num">4</span>
-            <span>{t.navChecklist}</span>
-          </div>
-        </div>
-      )}
     </header>
   );
 }
