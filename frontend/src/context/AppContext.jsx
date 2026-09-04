@@ -7,12 +7,19 @@ export function AppProvider({ children }) {
   const [lang, setLang] = useState('en');
   const [activeTab, setActiveTab] = useState('landing');
   
+  // Auth & Profile state
+  const [token, setToken] = useState(localStorage.getItem('jan_suvidha_token') || null);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [currentUser, setCurrentUser] = useState(null);
+  const [profileCompleted, setProfileCompleted] = useState(false);
+  const [authMode, setAuthMode] = useState('register'); // 'register' or 'login'
+
   // Selected category & search for Scheme Discovery UX
   const [selectedCategory, setSelectedCategory] = useState('All');
   const [searchQuery, setSearchQuery] = useState('');
 
   // Currently focused scheme for document verification & checklist
-  const [selectedSchemeId, setSelectedSchemeId] = useState('pmay_u');
+  const [selectedSchemeId, setSelectedSchemeId] = useState('kmut');
 
   const [profile, setProfile] = useState({
     name: 'Citizen',
@@ -94,6 +101,79 @@ export function AppProvider({ children }) {
 
   const toggleLanguage = () => {
     setLang(prev => (prev === 'en' ? 'ta' : 'en'));
+  };
+
+  const loginWithToken = (jwtToken, userObj) => {
+    localStorage.setItem('jan_suvidha_token', jwtToken);
+    setToken(jwtToken);
+    setCurrentUser(userObj);
+    setIsLoggedIn(true);
+
+    const isDone = Boolean(userObj?.profile_completed);
+    setProfileCompleted(isDone);
+
+    if (!isDone) {
+      // Force onboarding for first-time users
+      setActiveTab('profile-wizard');
+    } else {
+      setActiveTab('dashboard');
+    }
+
+    if (userObj) {
+      updateProfileAndMatch({
+        district: userObj.district || profile.district,
+        annual_family_income: userObj.annual_income || profile.annual_family_income
+      });
+    }
+  };
+
+  const logoutUser = () => {
+    localStorage.removeItem('jan_suvidha_token');
+    setToken(null);
+    setCurrentUser(null);
+    setIsLoggedIn(false);
+    setProfileCompleted(false);
+    setActiveTab('landing');
+  };
+
+  // Restore session from token on mount
+  useEffect(() => {
+    const savedToken = localStorage.getItem('jan_suvidha_token');
+    if (savedToken) {
+      fetch('/api/auth/me', {
+        headers: { Authorization: `Bearer ${savedToken}` }
+      })
+        .then(r => r.json())
+        .then(data => {
+          if (data.success && data.user) {
+            setCurrentUser(data.user);
+            setIsLoggedIn(true);
+            const isDone = Boolean(data.user.profile_completed);
+            setProfileCompleted(isDone);
+
+            if (!isDone) {
+              setActiveTab('profile-wizard');
+            }
+
+            updateProfileAndMatch({
+              district: data.user.district,
+              annual_family_income: data.user.annual_income
+            });
+          } else {
+            logoutUser();
+          }
+        })
+        .catch(() => logoutUser());
+    }
+  }, []);
+
+  // Strict gating: If logged in but profile not completed, lock activeTab to 'profile-wizard'
+  const setTabGated = (tabName) => {
+    if (isLoggedIn && !profileCompleted && tabName !== 'profile-wizard') {
+      setActiveTab('profile-wizard');
+      return;
+    }
+    setActiveTab(tabName);
   };
 
   // Fetch grounded matches whenever profile updates
@@ -197,7 +277,16 @@ export function AppProvider({ children }) {
         toggleLanguage,
         t,
         activeTab,
-        setActiveTab,
+        setActiveTab: setTabGated,
+        authMode,
+        setAuthMode,
+        token,
+        isLoggedIn,
+        currentUser,
+        profileCompleted,
+        setProfileCompleted,
+        loginWithToken,
+        logoutUser,
         profile,
         setProfile,
         updateProfileAndMatch,

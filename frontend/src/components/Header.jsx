@@ -1,24 +1,11 @@
 import React from 'react';
 import { useApp } from '../context/AppContext';
-import { 
-  Globe, 
-  MessageSquare, 
-  Award, 
-  FileCheck, 
-  ClipboardCheck 
-} from 'lucide-react';
+import { Globe, ShieldCheck, Home, MessageSquare, Award, FileText, CheckCircle2 } from 'lucide-react';
 
 export function Header() {
-  const { 
-    lang, 
-    toggleLanguage, 
-    t, 
-    activeTab, 
-    setActiveTab, 
-    schemeMatches 
-  } = useApp();
+  const { lang, toggleLanguage, t, activeTab, setActiveTab, schemeMatches } = useApp();
 
-  const eligibleCount = schemeMatches.filter(s => s.status === 'ELIGIBLE' || s.matchPercentage >= 70).length;
+  const eligibleCount = schemeMatches.filter(s => s.status === 'ELIGIBLE').length;
 
   return (
     <header className="header">
@@ -76,9 +63,79 @@ export function Header() {
               <Globe size={15} />
               <span>{lang === 'en' ? 'தமிழ்' : 'English'}</span>
             </button>
+
+            {isLoggedIn ? (
+              <div style={{ display: 'flex', gap: '0.5rem' }}>
+                <button className="lang-btn" style={{ background: 'rgba(37, 99, 235, 0.2)', borderColor: 'rgba(37, 99, 235, 0.4)', color: '#60a5fa' }} onClick={() => setActiveTab('profile-wizard')}>
+                  <UserCheck size={16} />
+                  <span>{t.navProfile}</span>
+                </button>
+
+                <button className="lang-btn" style={{ background: 'rgba(5, 150, 105, 0.2)', borderColor: 'rgba(5, 150, 105, 0.4)', color: '#34d399' }} onClick={() => setActiveTab('dashboard')}>
+                  <LayoutDashboard size={16} />
+                  <span>{t.navDashboard}</span>
+                </button>
+              </div>
+            ) : (
+              <div style={{ display: 'flex', gap: '0.5rem' }}>
+                <button 
+                  className="lang-btn" 
+                  style={{ background: 'var(--accent-primary)', borderColor: 'var(--accent-primary)', color: '#fff', fontWeight: '600', boxShadow: '0 2px 8px rgba(37,99,235,0.4)' }} 
+                  onClick={() => { setAuthMode('register'); setActiveTab('login'); }}
+                >
+                  <UserPlus size={16} />
+                  <span>{t.navRegister || 'Register'}</span>
+                </button>
+
+                <button 
+                  className="lang-btn" 
+                  style={{ background: 'rgba(255, 255, 255, 0.08)', borderColor: 'rgba(255, 255, 255, 0.15)', color: '#f1f5f9' }} 
+                  onClick={() => { setAuthMode('login'); setActiveTab('login'); }}
+                >
+                  <LogIn size={16} />
+                  <span>{t.navLogin || 'Login'}</span>
+                </button>
+              </div>
+            )}
           </div>
         </div>
       </div>
+
+      {activeTab !== 'landing' && (
+        <div className="stepper-bar">
+          <div 
+            className={`step-item ${activeTab === 'chat' ? 'active' : ''}`}
+            onClick={() => setActiveTab('chat')}
+          >
+            <span className="step-num">1</span>
+            <span>{t.navChat}</span>
+          </div>
+
+          <div 
+            className={`step-item ${activeTab === 'results' ? 'active' : ''}`}
+            onClick={() => setActiveTab('results')}
+          >
+            <span className="step-num">2</span>
+            <span>{t.navResults} ({eligibleCount})</span>
+          </div>
+
+          <div 
+            className={`step-item ${activeTab === 'docs' ? 'active' : ''}`}
+            onClick={() => setActiveTab('docs')}
+          >
+            <span className="step-num">3</span>
+            <span>{t.navDocs}</span>
+          </div>
+
+          <div 
+            className={`step-item ${activeTab === 'checklist' ? 'active' : ''}`}
+            onClick={() => setActiveTab('checklist')}
+          >
+            <span className="step-num">4</span>
+            <span>{t.navChecklist}</span>
+          </div>
+        </div>
+      )}
     </header>
   );
 }

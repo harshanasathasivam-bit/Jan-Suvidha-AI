@@ -6,6 +6,9 @@ import { ChatProfilePage } from './pages/ChatProfilePage';
 import { SchemeResultsPage } from './pages/SchemeResultsPage';
 import { DocCheckPage } from './pages/DocCheckPage';
 import { FinalChecklistPage } from './pages/FinalChecklistPage';
+import { LoginPage } from './pages/LoginPage';
+import { DashboardPage } from './pages/DashboardPage';
+import { ProfileWizardPage } from './pages/ProfileWizardPage';
 
 function MainLayout() {
   const { activeTab } = useApp();
@@ -16,6 +19,9 @@ function MainLayout() {
       <main className="main-content">
         <div className="container">
           {activeTab === 'landing' && <LandingPage />}
+          {activeTab === 'login' && <LoginPage />}
+          {activeTab === 'dashboard' && <DashboardPage />}
+          {activeTab === 'profile-wizard' && <ProfileWizardPage />}
           {activeTab === 'chat' && <ChatProfilePage />}
           {activeTab === 'results' && <SchemeResultsPage />}
           {activeTab === 'docs' && <DocCheckPage />}

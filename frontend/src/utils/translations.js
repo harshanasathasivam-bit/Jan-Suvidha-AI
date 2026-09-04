@@ -8,6 +8,11 @@ export const translations = {
     navResults: "Eligible Schemes",
     navDocs: "Document Verification",
     navChecklist: "Application Readiness",
+    navLogin: "Login",
+    navRegister: "Register Account",
+    navDashboard: "My Dashboard",
+    navProfile: "My Citizen Profile",
+    navLogout: "Logout",
 
     // Hero Section
     heroBadge: "Grounded AI Citizen Assistant • Tamil Nadu & Central Schemes",
@@ -15,9 +20,12 @@ export const translations = {
     heroDesc: "Tell us what you need. Jan Suvidha AI helps you discover relevant schemes, understand eligibility and get application-ready.",
     primaryCta: "Tell us what you need",
     secondaryCta: "Explore schemes",
+    startBtn: "Check My Eligibility Now",
+    exploreSchemesBtn: "Explore Seed Schemes",
+    loginHeroBtn: "Citizen Login / Portal Dashboard",
 
     // Stats
-    stat1Val: "7 Verified",
+    stat1Val: "19 Verified",
     stat1Label: "Real TN & Central Schemes",
     stat2Val: "Explainable AI",
     stat2Label: "PASS / WARN / FAIL Breakdowns",
@@ -33,17 +41,17 @@ export const translations = {
     catHousing: "Housing",
     catWomenChild: "Women & Child",
     catSocialSecurity: "Social Security",
-    viewOfficialSource: "View Official Source",
+    viewOfficialSource: "Official Portal",
     officialSourceBadge: "Official Government Source",
     lastVerifiedPrefix: "Last verified:",
-    seeWhyBtn: "Why this match?",
-    checkDocsBtn: "Check Documents",
-    docsReadyBadge: "documents ready",
+    seeWhyBtn: "Why do I qualify?",
+    checkDocsBtn: "Check Required Docs",
+    docsReadyBadge: "Docs Ready",
 
     // Explainable Eligibility Engine
-    resultsTitle: "Ranked Scheme Matches",
-    resultsSubtitle: "Directly evaluated against official government rules with condition breakdowns",
-    statusEligible: "May Be Eligible",
+    resultsTitle: "Eligible Government Schemes",
+    resultsSubtitle: "Transparent, grounded eligibility evaluation based on official government rules",
+    statusEligible: "Likely Eligible",
     statusPartial: "Needs Verification",
     statusIneligible: "Does Not Match",
     whyQualifyHeader: "Why you may qualify:",
@@ -102,6 +110,79 @@ export const translations = {
     step5Desc: "Prepares your readiness dossier and links directly to official government departments.",
     transparencyNote: "AI simplifies scheme information. It does not replace government eligibility decisions.",
 
+    // Profile Wizard & Forced Onboarding
+    profileWizardTitle: "Complete Your Citizen Profile",
+    profileWizardSub: "First-time setup: Enter your details to calculate grounded scheme & scholarship eligibility",
+    profileForcedNotice: "Action Required: Complete your profile to unlock scheme recommendations and eligibility checks.",
+    
+    step1Title: "1. Personal Details",
+    step2Title: "2. Education & Marks",
+    step3Title: "3. Family & Income",
+
+    fullNameLabel: "Full Name",
+    ageLabel: "Age (Years)",
+    genderLabel: "Gender",
+    mobileLabel: "Mobile Number",
+    districtLabel: "District",
+    
+    eduLevelLabel: "Education Level",
+    schoolTypeLabel: "School Type (Classes 6-12)",
+    courseTypeLabel: "Higher Education Course Type",
+    marksLabel: "Last Qualifying Exam Marks (%)",
+    
+    incomeLabel: "Annual Family Income (₹)",
+    rationHeadLabel: "Are you named as Head of Family on Ration Card?",
+    rationHolderLabel: "Do you have a Tamil Nadu Smart Ration Card?",
+    categoryLabel: "Category / Social Group",
+    disabilityLabel: "Disability Status (if applicable)",
+
+    btnNext: "Next Step",
+    btnBack: "Back",
+    btnSaveProfile: "Save Profile & See Recommendations",
+    btnEditProfile: "Edit Citizen Profile",
+
+    // Login & Register Screen
+    loginTitle: "Citizen Access Portal",
+    loginSubtitle: "Sign in or create a new account to check eligibility and manage welfare applications",
+    tabLogin: "Sign In",
+    tabRegister: "Create Account",
+    
+    emailLabel: "Email Address",
+    emailPlaceholder: "name@example.com",
+    passwordLabel: "Password",
+    passwordPlaceholder: "Enter your secure password",
+    nameLabel: "Full Name",
+    namePlaceholder: "e.g. Lakshmi Devi",
+
+    submitLoginBtn: "Sign In to Dashboard",
+    submitRegisterBtn: "Create Account & Verify Email",
+    
+    // Email Verification Step
+    verifyTitle: "Verify Your Email Address",
+    verifySubtitle: "We sent a 6-digit verification code to your email:",
+    codeLabel: "Enter 6-Digit Verification Code",
+    codePlaceholder: "e.g. 849201",
+    verifyBtn: "Verify Code & Enter Dashboard",
+    resendCodeBtn: "Resend Code",
+    simulatedCodeBanner: "Verification Code sent to email:",
+
+    // Dashboard Screen
+    dashWelcome: "Welcome,",
+    dashSub: "Tamil Nadu Citizen Welfare Portal Dashboard",
+    dashProfileTitle: "Citizen Digital Identity & Profile",
+    dashStatusVerified: "Email & Aadhaar Verified",
+    dashAadhaarNum: "Aadhaar Status: Linked & Verified",
+    dashRationNum: "Ration Card: Active Member",
+    dashIncomeStatus: "Annual Income: Low Income Certified",
+    
+    dashActionCheckSchemes: "Check Scheme Eligibility",
+    dashActionUploadDocs: "Verify Documents",
+    dashActionViewDossier: "Print Application Dossier",
+    
+    dashApplicationsTitle: "My Scheme Applications & Match Status",
+    dashSavedDocsTitle: "Verified Document Vault",
+    dashUpdatesTitle: "2026 Welfare Policy Notifications",
+
     // Chat / Tell Us
     chatTitle: "AI Citizen Assistant",
     chatSubtitle: "Speak or type in Tamil or English to discover welfare schemes tailored for you.",
@@ -124,11 +205,10 @@ export const translations = {
     fieldEducation: "Higher Education",
     fieldDistrict: "District",
     fieldRation: "Smart Ration Card",
-    fieldHouse: "Pucca House Owned",
-    viewMatchesBtn: "Match Schemes Now",
+    fieldHouse: "Owns Pucca House",
+    viewMatchesBtn: "View Eligible Schemes",
     printBtn: "Print Application Dossier"
   },
-
   ta: {
     appName: "ஜன் சுவிதா AI",
     appTagline: "தமிழ்நாடு மக்கள் நலத்திட்ட வழிகாட்டி",
@@ -138,6 +218,11 @@ export const translations = {
     navResults: "பொருத்தமான திட்டங்கள்",
     navDocs: "ஆவணச் சரிபார்ப்பு",
     navChecklist: "விண்ணப்பத் தயார்நிலை",
+    navLogin: "உள்நுழைவு",
+    navRegister: "புதிய கணக்கு பதிவு",
+    navDashboard: "என் டாஷ்போர்டு",
+    navProfile: "சுயவிவரம்",
+    navLogout: "வெளியேறு",
 
     // Hero Section
     heroBadge: "அரசு அங்கீகாரம் பெற்ற நலத்திட்ட AI வழிகாட்டி • தமிழ்நாடு மற்றும் மத்திய திட்டங்கள்",
@@ -145,9 +230,12 @@ export const translations = {
     heroDesc: "உங்களுக்கு என்ன தேவை என்று கூறுங்கள். ஜன் சுவிதா AI உங்களுக்குப் பொருத்தமான திட்டங்களைக் கண்டறிந்து, தகுதியை விளக்கி, விண்ணப்பிக்கத் தயார்படுத்துகிறது.",
     primaryCta: "என்ன தேவை என்று கூறுங்கள்",
     secondaryCta: "திட்டங்களை ஆராயுங்கள்",
+    startBtn: "எனது தகுதியைச் சரிபார்க்கவும்",
+    exploreSchemesBtn: "திட்டங்களை அறிய",
+    loginHeroBtn: "குடிமகன் உள்நுழைவு / டாஷ்போர்டு",
 
     // Stats
-    stat1Val: "7 உறுதிசெய்யப்பட்ட",
+    stat1Val: "19 உறுதிசெய்யப்பட்ட",
     stat1Label: "உண்மையான நலத்திட்டங்கள்",
     stat2Val: "விளக்கக்கூடிய AI",
     stat2Label: "தெளிவான தகுதி நிலை",
@@ -204,39 +292,111 @@ export const translations = {
     docDisclaimer: "குறிப்பு: இது விண்ணப்பிப்பதற்கு முந்தைய தரப் பரிசோதனை மட்டுமே. இது சட்டப்பூர்வ உண்மைத்தன்மையை உறுதிப்படுத்தாது.",
 
     // Application Readiness Score
-    readinessTitle: "விண்ணப்ப தயார்நிலை மதிப்பீடு",
-    readinessSubtitle: "சுயவிவரம், தகுதி விதிகள் மற்றும் சரிபார்க்கப்பட்ட ஆவணங்களின் ஒருங்கிணைந்த தயார்நிலை.",
-    finalSuccessHeading: "நீங்கள் விண்ணப்பிக்க கிட்டத்தட்ட தயாராகிவிட்டீர்கள்!",
-    profileCompleteness: "சுயவிவர நிறைவு",
-    eligibilityReadiness: "தகுதிப் பொருத்தம்",
+    readinessTitle: "விண்ணப்பத் தயார்நிலை மதிப்பீடு",
+    readinessSubtitle: "சுயவிவரம், தகுதி விதிகள் மற்றும் ஆவணங்களின் ஒருங்கிணைந்த ஆய்வு.",
+    finalSuccessHeading: "நீங்கள் விண்ணப்பிக்கத் தயாராகிவிட்டீர்கள்",
+    profileCompleteness: "சுயவிவரப் பூர்த்தி",
+    eligibilityReadiness: "திட்டத் தகுதி",
     documentsReadiness: "ஆவணத் தயார்நிலை",
-    readyToApplyHeader: "விண்ணப்பிக்கத் தயாரானவை",
-    needsAttentionHeader: "கவனம் தேவைப்படுபவை",
-    nextActionsHeader: "அடுத்த நடவடிக்கைகள்",
-    actionFixDoc: "ஆவணத்தைச் சரிசெய்க",
-    actionViewChecklist: "விண்ணப்பப் பட்டியலை அச்சிடுக",
-    actionOfficialPortal: "அதிகாரப்பூர்வ இணையதளத்திற்குச் செல்க",
-    noSubmitNotice: "பாதுகாப்பு குறிப்பு: ஜன் சுவிதா AI எவ்வித அரசு விண்ணப்பத்தையும் தானாக சமர்ப்பிக்காது. அதிகாரப்பூர்வ அரசு இணையதளத்தில் இறுதி விண்ணப்பத்தை சமர்ப்பிக்கவும்.",
+    readyToApplyHeader: "விண்ணப்பிக்கத் தயார்",
+    needsAttentionHeader: "கவனம் தேவைப்படும் விஷயங்கள்",
+    nextActionsHeader: "அடுத்த கட்ட நடவடிக்கைகள்",
+    actionFixDoc: "ஆவணத்தை பதிவேற்றவும்",
+    actionViewChecklist: "அறிக்கையைப் பார்க்கவும்",
+    actionOfficialPortal: "அரசு தளத்திற்குச் செல்லவும்",
+    noSubmitNotice: "பாதுகாப்பு வழிகாட்டுதல்: ஜன் சுவிதா AI தானாக விண்ணப்பங்களைச் சமர்ப்பிக்காது. அதிகாரப்பூர்வ அரசு இணையதளத்தில் இறுதி விண்ணப்பத்தை சமர்ப்பிக்கவும்.",
 
     // AI Transparency
-    transparencyTitle: "AI வெளிப்படைத்தன்மை & இயங்கும் முறை",
-    step1Title: "1. உங்கள் கோரிக்கையைப் புரிந்துகொள்கிறது",
-    step1Desc: "தமிழ் மற்றும் ஆங்கிலத்தில் குரல் அல்லது எழுத்து மூலம் உங்கள் நிலையை உணர்கிறது.",
-    step2Title: "2. அரசு விதிகளுடன் ஒப்பிடுகிறது",
-    step2Desc: "வருமான வரம்பு, குடியிருப்பு, கல்வி போன்ற உண்மையான அரசு விதிமுறைகளுடன் ஒப்பிடுகிறது.",
-    step3Title: "3. தகுதி நிலையை விளக்குகிறது",
-    step3Desc: "யூகம் ஏதுமின்றி ஒவ்வொரு நிபந்தனையையும் தெளிவான காரணங்களுடன் விவரிக்கிறது.",
-    step4Title: "4. ஆவணத் தயார்நிலையை சோதிக்கிறது",
-    step4Desc: "ஆவணத்தின் தெளிவு, எண்கள் மற்றும் தேவையான சான்றுகளை சரிபார்க்கிறது.",
-    step5Title: "5. அரசு போர்ட்டலுக்கு வழிகாட்டுகிறது",
-    step5Desc: "தயாரான விண்ணப்ப சுருக்கத்துடன் உங்களை அதிகாரப்பூர்வ துறைக்கு வழிநடத்துகிறது.",
-    transparencyNote: "AI நலத்திட்ட தகவல்களை எளிதாக்குகிறது. இது அரசின் தகுதி முடிவை மாற்றாது.",
+    transparencyTitle: "AI வெளிப்படைத்தன்மை மற்றும் ஜன் சுவிதா AI செயல்படும் விதம்",
+    step1Title: "1. உங்கள் தேவையைப் புரிந்துகொள்ளுதல்",
+    step1Desc: "தமிழ் மற்றும் ஆங்கிலத்தில் பேசும் அல்லது எழுதும் விவரங்களிலிருந்து முக்கிய தகவல்களைப் பிரித்தெடுக்கிறது.",
+    step2Title: "2. அரசு விதிகளுடன் ஒப்பிடுதல்",
+    step2Desc: "வருமான வரம்பு, குடியிருப்பு போன்ற அதிகாரப்பூர்வ அரசு விதிகளுடன் தகவல்களை ஒப்பிடுகிறது.",
+    step3Title: "3. தகுதிக்கான காரணங்களை விளக்குதல்",
+    step3Desc: "யூகம் இல்லாமல் வெளிப்படையான விதிவாரியான தணிக்கை அறிக்கையை வழங்குகிறது.",
+    step4Title: "4. ஆவணங்களின் தரத்தைச் சரிபார்த்தல்",
+    step4Desc: "பதிவேற்றப்பட்ட ஆவணங்களின் தெளிவுத்தன்மை மற்றும் தகவல்களை ஆய்வு செய்கிறது.",
+    step5Title: "5. அதிகாரப்பூர்வ தளங்களுக்கு வழிகாட்டுதல்",
+    step5Desc: "தயார்நிலை அறிக்கையை வழங்கி சம்பந்தப்பட்ட அரசு தளத்திற்கு இணைக்கிறது.",
+    transparencyNote: "AI நலத்திட்ட தகவல்களை எளிமைப்படுத்துகிறது. இது அரசு அதிகாரிகளின் இறுதி முடிவுக்கு மாற்றாகாது.",
 
-    // Chat / Tell Us
-    chatTitle: "AI குடிமகன் உதவியாளர்",
-    chatSubtitle: "தமிழிலோ ஆங்கிலத்திலோ பேசி அல்லது எழுதி உங்களுக்கான திட்டங்களை அறியுங்கள்.",
-    typePlaceholder: "உங்களைப் பற்றி எழுதுங்கள் (எ.கா. 'நான் 45 வயது விவசாயி, ஆண்டு வருமானம் ₹1.2 லட்சம்')...",
-    speakBtn: "பேசுக",
+    // Profile Wizard & Forced Onboarding
+    profileWizardTitle: "குடிமகன் சுயவிவரத்தை முழுமைப்படுத்துக",
+    profileWizardSub: "நலத்திட்டங்கள் மற்றும் உதவித்தொகை தகுதியை அறிய விவரங்களை உள்ளிடவும்",
+    profileForcedNotice: "முக்கிய குறிப்பு: நலத்திட்டப் பரிந்துரைகளைப் பெற உங்கள் விவரங்களைப் பூர்த்தி செய்யவும்.",
+    
+    step1Title: "1. தனிப்பட்ட விவரங்கள்",
+    step2Title: "2. கல்வி மற்றும் மதிப்பெண்கள்",
+    step3Title: "3. குடும்பம் மற்றும் வருமானம்",
+
+    fullNameLabel: "முழு பெயர்",
+    ageLabel: "வயது",
+    genderLabel: "பாலினம்",
+    mobileLabel: "கைபேசி எண்",
+    districtLabel: "மாவட்டம்",
+    
+    eduLevelLabel: "கல்வி நிலை",
+    schoolTypeLabel: "பள்ளி வகை (6-12 வகுப்பு)",
+    courseTypeLabel: "உயர்கல்வி படிப்பு வகை",
+    marksLabel: "முந்தைய தேர்வு மதிப்பெண் (%)",
+    
+    incomeLabel: "குடும்ப ஆண்டு வருமானம் (₹)",
+    rationHeadLabel: "குடும்ப அட்டையில் குடும்பத் தலைவியாக உள்ளீர்களா?",
+    rationHolderLabel: "தமிழ்நாடு ஸ்மார்ட் குடும்ப அட்டை உள்ளதா?",
+    categoryLabel: "பிரிவு / சமூகப் பிரிவு",
+    disabilityLabel: "மாற்றுத்திறனாளி விவரம் (பொருந்தினால்)",
+
+    btnNext: "அடுத்த படி",
+    btnBack: "முந்தைய படி",
+    btnSaveProfile: "விவரங்களைச் சேமித்து திட்டங்களைக் காண்க",
+    btnEditProfile: "சுயவிவரத்தைத் திருத்துக",
+
+    // Login & Register Screen
+    loginTitle: "குடிமக்கள் நுழைவு வாயில்",
+    loginSubtitle: "உங்கள் தகுதியைச் சரிபார்க்க உள்நுழையவும் அல்லது கணக்கு உருவாக்கவும்",
+    tabLogin: "உள்நுழைவு",
+    tabRegister: "புதிய கணக்கு",
+    
+    emailLabel: "மின்னஞ்சல் முகவரி",
+    emailPlaceholder: "name@example.com",
+    passwordLabel: "கடவுச்சொல்",
+    passwordPlaceholder: "கடவுச்சொல்லை உள்ளிடவும்",
+    nameLabel: "முழு பெயர்",
+    namePlaceholder: "எ.கா: லட்சுமி தேவி",
+
+    submitLoginBtn: "உள்நுழைக",
+    submitRegisterBtn: "கணக்கை உருவாக்கி மின்னஞ்சலைச் சரிபார்க்கவும்",
+
+    // Email Verification Step
+    verifyTitle: "மின்னஞ்சலைச் சரிபார்க்கவும்",
+    verifySubtitle: "உங்கள் மின்னஞ்சலுக்கு 6 இலக்க சரிபார்ப்புக் குறியீட்டை அனுப்பியுள்ளோம்:",
+    codeLabel: "6 இலக்க சரிபார்ப்புக் குறியீட்டை உள்ளிடவும்",
+    codePlaceholder: "எ.கா: 849201",
+    verifyBtn: "குறியீட்டைச் சரிபார்த்து உள்நுழைக",
+    resendCodeBtn: "குறியீட்டை மீண்டும் அனுப்புக",
+    simulatedCodeBanner: "மின்னஞ்சலுக்கு அனுப்பப்பட்ட குறியீடு:",
+
+    // Dashboard Screen
+    dashWelcome: "நல்வரவு,",
+    dashSub: "தமிழ்நாடு குடிமக்கள் நலத்திட்ட டாஷ்போர்டு",
+    dashProfileTitle: "குடிமகன் டிஜிட்டல் அடையாளம்",
+    dashStatusVerified: "மின்னஞ்சல் மற்றும் ஆதார் உறுதிசெய்யப்பட்டது",
+    dashAadhaarNum: "ஆதார் நிலை: இணைக்கப்பட்டது",
+    dashRationNum: "குடும்ப அட்டை: செயலில் உள்ளது",
+    dashIncomeStatus: "ஆண்டு வருமானம்: சான்றளிக்கப்பட்டது",
+
+    dashActionCheckSchemes: "தகுதியைச் சரிபார்க்க",
+    dashActionUploadDocs: "ஆவணங்களை ஆய்வு செய்ய",
+    dashActionViewDossier: "அறிக்கையை அச்சிட",
+
+    dashApplicationsTitle: "எனது விண்ணப்பங்கள் மற்றும் தகுதி நிலை",
+    dashSavedDocsTitle: "சரிபார்க்கப்பட்ட ஆவணப் பேழை",
+    dashUpdatesTitle: "2026 அரசு அறிவிப்புகள்",
+
+    chatTitle: "AI குடிமக்கள் உதவியாளர்",
+    chatSubtitle: "தமிழ் அல்லது ஆங்கிலத்தில் பேசியோ தட்டச்சு செய்தோ உங்கள் விவரங்களைப் பகிரவும்",
+    typePlaceholder: "எ.கா: 'நான் சென்னையில் வசிக்கும் 22 வயது மாணவி'...",
+    speakBtn: "பேசவும்",
     speakingActive: "கேட்கிறது...",
     sendBtn: "அனுப்புக",
     presetChip1: "விவசாயி, ஆண்டு வருமானம் ₹1.2L, நலத்திட்ட உதவி தேவை",

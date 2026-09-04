@@ -12,11 +12,14 @@ import {
   HeartHandshake, 
   Home, 
   Calendar,
-  AlertCircle
+  AlertCircle,
+  Sprout,
+  LogIn,
+  LayoutDashboard
 } from 'lucide-react';
 
 export function LandingPage() {
-  const { t, lang, setActiveTab, allSchemes } = useApp();
+  const { t, lang, setActiveTab, allSchemes, isLoggedIn, setAuthMode } = useApp();
 
   const getCategoryIcon = (category) => {
     switch (category) {
@@ -24,6 +27,7 @@ export function LandingPage() {
       case 'Education': return <GraduationCap size={18} className="cat-icon education" />;
       case 'Health': return <HeartHandshake size={18} className="cat-icon health" />;
       case 'Women & Child': return <Sparkles size={18} className="cat-icon women" />;
+      case 'Agriculture': return <Sprout size={18} className="cat-icon agri" />;
       default: return <Building2 size={18} className="cat-icon govt" />;
     }
   };
