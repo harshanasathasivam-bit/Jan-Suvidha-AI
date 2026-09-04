@@ -139,7 +139,20 @@ export function ProfileWizardPage() {
       // Navigate to Scheme Recommendations
       setActiveTab('results');
     } catch (err) {
-      setErrorMsg('Network error saving profile.');
+      console.warn('Network error saving profile, updating client profile state:', err);
+      setProfileCompleted(true);
+      updateProfileAndMatch({
+        age: Number(age),
+        gender,
+        district,
+        annual_family_income: Number(income),
+        school_type_6_to_12: schoolType,
+        education_course_type: courseType,
+        education_level: educationLevel,
+        ration_card_head: rationHead,
+        ration_card_holder: rationHolder
+      });
+      setActiveTab('results');
     } finally {
       setLoading(false);
     }
