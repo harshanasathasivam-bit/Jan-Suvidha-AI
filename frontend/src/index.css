@@ -709,6 +709,27 @@ body {
   outline: none;
 }
 
+/* Select & Option styling - Fix white-on-white text in dropdown popups */
+select,
+select.chat-input {
+  background-color: #0f172a !important;
+  color: #f8fafc !important;
+  cursor: pointer;
+}
+
+select option,
+select optgroup {
+  background-color: #0f172a !important;
+  color: #f8fafc !important;
+  padding: 8px 12px;
+}
+
+select option:checked,
+select option:hover {
+  background-color: #2563eb !important;
+  color: #ffffff !important;
+}
+
 .chat-input:focus {
   border-color: var(--accent-primary);
 }
