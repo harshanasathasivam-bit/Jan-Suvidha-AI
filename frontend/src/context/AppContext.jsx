@@ -8,6 +8,7 @@ export function AppProvider({ children }) {
   const [activeTab, setActiveTab] = useState('landing');
   
   // Auth state
+  const [token, setToken] = useState(localStorage.getItem('jan_suvidha_token') || null);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [currentUser, setCurrentUser] = useState(null);
 
@@ -46,20 +47,53 @@ export function AppProvider({ children }) {
     setLang(prev => (prev === 'en' ? 'ta' : 'en'));
   };
 
-  const loginUser = (userObj) => {
+  const loginWithToken = (jwtToken, userObj) => {
+    localStorage.setItem('jan_suvidha_token', jwtToken);
+    setToken(jwtToken);
     setCurrentUser(userObj);
     setIsLoggedIn(true);
-    if (userObj.profile) {
-      updateProfileAndMatch(userObj.profile);
+
+    if (userObj) {
+      updateProfileAndMatch({
+        district: userObj.district || profile.district,
+        annual_family_income: userObj.annual_income || profile.annual_family_income
+      });
     }
+
     setActiveTab('dashboard');
   };
 
   const logoutUser = () => {
+    localStorage.removeItem('jan_suvidha_token');
+    setToken(null);
     setCurrentUser(null);
     setIsLoggedIn(false);
     setActiveTab('landing');
   };
+
+  // Restore session from token on mount
+  useEffect(() => {
+    const savedToken = localStorage.getItem('jan_suvidha_token');
+    if (savedToken) {
+      fetch('/api/auth/me', {
+        headers: { Authorization: `Bearer ${savedToken}` }
+      })
+        .then(r => r.json())
+        .then(data => {
+          if (data.success && data.user) {
+            setCurrentUser(data.user);
+            setIsLoggedIn(true);
+            updateProfileAndMatch({
+              district: data.user.district,
+              annual_family_income: data.user.annual_income
+            });
+          } else {
+            logoutUser();
+          }
+        })
+        .catch(() => logoutUser());
+    }
+  }, []);
 
   // Fetch grounded matches whenever profile updates
   const updateProfileAndMatch = async (newProfileFields) => {
@@ -98,9 +132,10 @@ export function AppProvider({ children }) {
         t,
         activeTab,
         setActiveTab,
+        token,
         isLoggedIn,
         currentUser,
-        loginUser,
+        loginWithToken,
         logoutUser,
         profile,
         setProfile,

@@ -1,62 +1,148 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useApp } from '../context/AppContext';
-import { Mail, Lock, User, MapPin, DollarSign, KeyRound, CheckCircle2, ArrowRight, ShieldCheck, RefreshCw } from 'lucide-react';
+import { Mail, Lock, User, MapPin, KeyRound, CheckCircle2, ArrowRight, ShieldCheck, RefreshCw, AlertCircle } from 'lucide-react';
 
 export function LoginPage() {
-  const { lang, t, loginUser, setActiveTab } = useApp();
+  const { lang, t, loginWithToken } = useApp();
 
   const [mode, setMode] = useState('login'); // 'login' or 'register'
-  const [step, setStep] = useState('credentials'); // 'credentials' or 'verify_email'
+  const [step, setStep] = useState('credentials'); // 'credentials', 'verify_email', 'verify_login'
 
   // Form Fields
+  const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [name, setName] = useState('');
   const [district, setDistrict] = useState('Chennai');
   const [income, setIncome] = useState('120000');
 
-  // Verification state
-  const [generatedCode, setGeneratedCode] = useState('');
-  const [inputCode, setInputCode] = useState('');
-  const [codeError, setCodeError] = useState('');
+  // Verification & Error States
+  const [code, setCode] = useState('');
+  const [errorMsg, setErrorMsg] = useState('');
+  const [infoMsg, setInfoMsg] = useState('');
+  const [devNotice, setDevNotice] = useState('');
+  const [loading, setLoading] = useState(false);
 
-  const handleStartAuth = (e) => {
+  // Resend cooldown timer
+  const [cooldown, setCooldown] = useState(0);
+
+  useEffect(() => {
+    let timer;
+    if (cooldown > 0) {
+      timer = setInterval(() => setCooldown(c => c - 1), 1000);
+    }
+    return () => clearInterval(timer);
+  }, [cooldown]);
+
+  // Handle Form Submission (Login or Register)
+  const handleSubmitCredentials = async (e) => {
     e.preventDefault();
-    if (!email || !password) return;
+    setErrorMsg('');
+    setInfoMsg('');
+    setDevNotice('');
+    setLoading(true);
 
-    // Generate realistic 6-digit email verification code
-    const code = Math.floor(100000 + Math.random() * 900000).toString();
-    setGeneratedCode(code);
-    setStep('verify_email');
+    try {
+      if (mode === 'register') {
+        const res = await fetch('/api/auth/register', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ name, email, password, district, income: Number(income) })
+        });
+        const data = await res.json();
+
+        if (!data.success) {
+          setErrorMsg(data.error || 'Registration failed');
+          return;
+        }
+
+        setInfoMsg(data.message);
+        if (data.devNotice) setDevNotice(data.devNotice);
+        setStep('verify_email');
+        setCooldown(60);
+      } else {
+        // Login Flow
+        const res = await fetch('/api/auth/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, password })
+        });
+        const data = await res.json();
+
+        if (!data.success) {
+          setErrorMsg(data.error || 'Login failed');
+          return;
+        }
+
+        setInfoMsg(data.message);
+        if (data.devNotice) setDevNotice(data.devNotice);
+        setStep('verify_login');
+        setCooldown(60);
+      }
+    } catch (err) {
+      setErrorMsg('Network error. Please try again.');
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const handleVerifyEmailCode = (e) => {
+  // Handle Code Verification (Register Email or Login Code)
+  const handleVerifyCode = async (e) => {
     e.preventDefault();
-    if (inputCode.trim() !== generatedCode) {
-      setCodeError(lang === 'ta' ? 'தவறான குறியீடு. தயவுசெய்து மீண்டும் முயற்சிக்கவும்.' : 'Invalid verification code. Please check and retry.');
-      return;
-    }
+    if (!code.trim()) return;
 
-    // Auth Successful
-    loginUser({
-      name: name || email.split('@')[0] || 'Citizen',
-      email: email,
-      district: district,
-      income: parseInt(income, 10) || 120000,
-      aadhaar: 'XXXX-XXXX-' + Math.floor(1000 + Math.random() * 9000),
-      isVerified: true,
-      profile: {
-        age: 24,
-        gender: 'female',
-        annual_family_income: parseInt(income, 10) || 120000,
-        ration_card_head: true,
-        school_type_6_to_12: 'tn_govt_school',
-        district: district
+    setErrorMsg('');
+    setLoading(true);
+
+    try {
+      const endpoint = step === 'verify_email' ? '/api/auth/verify-email' : '/api/auth/verify-login';
+      const res = await fetch(endpoint, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, code: code.trim() })
+      });
+      const data = await res.json();
+
+      if (!data.success) {
+        setErrorMsg(data.error || 'Verification failed');
+        return;
       }
-    });
 
-    // Jump straight to Dashboard or Scheme Match
-    setActiveTab('dashboard');
+      // Login Successful with JWT Token
+      loginWithToken(data.token, data.user);
+    } catch (err) {
+      setErrorMsg('Network error during verification.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Handle Resend Code
+  const handleResendCode = async () => {
+    if (cooldown > 0) return;
+    setErrorMsg('');
+    setInfoMsg('');
+    setDevNotice('');
+
+    try {
+      const purpose = step === 'verify_email' ? 'register' : 'login';
+      const res = await fetch('/api/auth/resend-code', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, purpose })
+      });
+      const data = await res.json();
+
+      if (!data.success) {
+        setErrorMsg(data.error || 'Resend failed');
+        return;
+      }
+
+      setInfoMsg(data.message);
+      if (data.devNotice) setDevNotice(data.devNotice);
+      setCooldown(60);
+    } catch (err) {
+      setErrorMsg('Failed to resend code.');
+    }
   };
 
   return (
@@ -67,34 +153,54 @@ export function LoginPage() {
             <KeyRound size={28} color="#fff" />
           </div>
           <h2 style={{ fontSize: '1.6rem', fontWeight: '800', marginBottom: '0.35rem' }}>
-            {step === 'verify_email' ? t.verifyTitle : t.loginTitle}
+            {step === 'credentials' ? t.loginTitle : t.verifyTitle}
           </h2>
           <p style={{ fontSize: '0.88rem', color: '#94a3b8' }}>
-            {step === 'verify_email' ? `${t.verifySubtitle} ${email}` : t.loginSubtitle}
+            {step === 'credentials' ? t.loginSubtitle : `${t.verifySubtitle} ${email}`}
           </p>
         </div>
 
+        {errorMsg && (
+          <div style={{ background: 'rgba(220, 38, 38, 0.15)', border: '1px solid rgba(220, 38, 38, 0.3)', color: '#f87171', padding: '0.85rem', borderRadius: '8px', fontSize: '0.88rem', marginBottom: '1.25rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+            <AlertCircle size={18} style={{ flexShrink: 0 }} />
+            <span>{errorMsg}</span>
+          </div>
+        )}
+
+        {infoMsg && (
+          <div style={{ background: 'rgba(5, 150, 105, 0.15)', border: '1px solid rgba(5, 150, 105, 0.3)', color: '#34d399', padding: '0.85rem', borderRadius: '8px', fontSize: '0.88rem', marginBottom: '1.25rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+            <CheckCircle2 size={18} style={{ flexShrink: 0 }} />
+            <span>{infoMsg}</span>
+          </div>
+        )}
+
+        {devNotice && (
+          <div style={{ background: 'rgba(217, 119, 6, 0.15)', border: '1px solid rgba(217, 119, 6, 0.3)', color: '#fcd34d', padding: '0.85rem', borderRadius: '8px', fontSize: '0.88rem', marginBottom: '1.25rem', textAlign: 'center' }}>
+            🔔 <strong>Notice:</strong> {devNotice}
+          </div>
+        )}
+
         {step === 'credentials' ? (
           <div>
-            {/* Dual Mode Switch: Sign In vs Register */}
+            {/* Mode Selector */}
             <div style={{ display: 'flex', background: 'rgba(255,255,255,0.05)', padding: '4px', borderRadius: '10px', marginBottom: '1.5rem' }}>
               <button 
                 type="button"
                 style={{ flex: 1, padding: '0.65rem', border: 'none', borderRadius: '8px', background: mode === 'login' ? 'var(--accent-primary)' : 'transparent', color: '#fff', fontWeight: '600', fontSize: '0.88rem', cursor: 'pointer' }}
-                onClick={() => setMode('login')}
+                onClick={() => { setMode('login'); setErrorMsg(''); }}
               >
                 {t.tabLogin}
               </button>
               <button 
                 type="button"
                 style={{ flex: 1, padding: '0.65rem', border: 'none', borderRadius: '8px', background: mode === 'register' ? 'var(--accent-primary)' : 'transparent', color: '#fff', fontWeight: '600', fontSize: '0.88rem', cursor: 'pointer' }}
-                onClick={() => setMode('register')}
+                onClick={() => { setMode('register'); setErrorMsg(''); }}
               >
                 {t.tabRegister}
               </button>
             </div>
 
-            <form onSubmit={handleStartAuth}>
+            <form onSubmit={handleSubmitCredentials}>
               {mode === 'register' && (
                 <div style={{ marginBottom: '1.1rem' }}>
                   <label style={{ display: 'block', fontSize: '0.85rem', color: '#94a3b8', marginBottom: '0.4rem', fontWeight: '500' }}>
@@ -188,21 +294,16 @@ export function LoginPage() {
                 </div>
               )}
 
-              <button type="submit" className="btn-primary" style={{ width: '100%', marginTop: '0.5rem' }}>
+              <button type="submit" className="btn-primary" style={{ width: '100%', marginTop: '0.5rem' }} disabled={loading}>
+                {loading ? <RefreshCw className="spin" size={18} /> : <ArrowRight size={18} />}
                 <span>{mode === 'login' ? t.submitLoginBtn : t.submitRegisterBtn}</span>
-                <ArrowRight size={18} />
               </button>
             </form>
           </div>
         ) : (
-          /* Step 2: Realistic Email Verification Code Screen */
+          /* Step 2: 6-Digit Email Verification Screen */
           <div>
-            <div style={{ background: 'rgba(37, 99, 235, 0.15)', border: '1px solid rgba(37, 99, 235, 0.3)', padding: '1rem', borderRadius: '12px', textAlign: 'center', marginBottom: '1.5rem' }}>
-              <div style={{ fontSize: '0.85rem', color: '#94a3b8', marginBottom: '0.25rem' }}>{t.simulatedCodeBanner}</div>
-              <div style={{ fontSize: '1.8rem', fontWeight: '800', letterSpacing: '4px', color: '#60a5fa' }}>{generatedCode}</div>
-            </div>
-
-            <form onSubmit={handleVerifyEmailCode}>
+            <form onSubmit={handleVerifyCode}>
               <div style={{ marginBottom: '1.25rem' }}>
                 <label style={{ display: 'block', fontSize: '0.85rem', color: '#94a3b8', marginBottom: '0.4rem', fontWeight: '500' }}>
                   {t.codeLabel}
@@ -210,32 +311,38 @@ export function LoginPage() {
                 <input 
                   type="text"
                   className="chat-input"
-                  style={{ width: '100%', textAlign: 'center', fontSize: '1.25rem', letterSpacing: '3px' }}
-                  placeholder={t.codePlaceholder}
+                  style={{ width: '100%', textAlign: 'center', fontSize: '1.4rem', letterSpacing: '6px', fontWeight: '700' }}
+                  placeholder="123456"
                   maxLength={6}
-                  value={inputCode}
-                  onChange={(e) => {
-                    setInputCode(e.target.value);
-                    setCodeError('');
-                  }}
+                  value={code}
+                  onChange={(e) => setCode(e.target.value)}
                   required
                 />
-                {codeError && <div style={{ color: '#f87171', fontSize: '0.82rem', marginTop: '0.4rem' }}>{codeError}</div>}
               </div>
 
-              <button type="submit" className="btn-primary" style={{ width: '100%' }}>
-                <ShieldCheck size={18} />
+              <button type="submit" className="btn-primary" style={{ width: '100%' }} disabled={loading}>
+                {loading ? <RefreshCw className="spin" size={18} /> : <ShieldCheck size={18} />}
                 <span>{t.verifyBtn}</span>
               </button>
 
-              <button 
-                type="button" 
-                className="btn-secondary" 
-                style={{ width: '100%', marginTop: '0.75rem' }}
-                onClick={() => setStep('credentials')}
-              >
-                <span>Change Email / Back</span>
-              </button>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '1.25rem', fontSize: '0.85rem' }}>
+                <button 
+                  type="button"
+                  style={{ background: 'none', border: 'none', color: '#60a5fa', cursor: 'pointer', padding: 0 }}
+                  onClick={() => setStep('credentials')}
+                >
+                  ← Back to Sign In
+                </button>
+
+                <button 
+                  type="button"
+                  style={{ background: 'none', border: 'none', color: cooldown > 0 ? '#64748b' : '#34d399', cursor: cooldown > 0 ? 'default' : 'pointer', padding: 0, fontWeight: '600' }}
+                  onClick={handleResendCode}
+                  disabled={cooldown > 0}
+                >
+                  {cooldown > 0 ? `Resend code in ${cooldown}s` : t.resendCodeBtn}
+                </button>
+              </div>
             </form>
           </div>
         )}

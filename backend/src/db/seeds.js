@@ -14,10 +14,10 @@ if (!fs.existsSync(__dirname)) {
 
 const db = new sqlite3.Database(dbPath);
 
-console.log('🌱 Initializing Jan Suvidha AI Tamil Nadu Scheme Database...');
+console.log('🌱 Initializing Jan Suvidha AI Database & Auth Schema...');
 
 db.serialize(() => {
-  // Create tables
+  // 1. Schemes table
   db.run(`
     CREATE TABLE IF NOT EXISTS schemes (
       id TEXT PRIMARY KEY,
@@ -36,6 +36,7 @@ db.serialize(() => {
     )
   `);
 
+  // 2. Eligibility Rules
   db.run(`
     CREATE TABLE IF NOT EXISTS eligibility_rules (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -50,6 +51,7 @@ db.serialize(() => {
     )
   `);
 
+  // 3. Required Documents
   db.run(`
     CREATE TABLE IF NOT EXISTS required_documents (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -64,7 +66,35 @@ db.serialize(() => {
     )
   `);
 
-  // Clear existing
+  // 4. Users Table (Real Authentication)
+  db.run(`
+    CREATE TABLE IF NOT EXISTS users (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      name TEXT NOT NULL,
+      email TEXT UNIQUE NOT NULL,
+      hashed_password TEXT NOT NULL,
+      district TEXT DEFAULT 'Chennai',
+      annual_income REAL DEFAULT 120000,
+      is_verified INTEGER DEFAULT 0,
+      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    )
+  `);
+
+  // 5. Verification Codes Table (6-digit numeric codes with 10-min expiry)
+  db.run(`
+    CREATE TABLE IF NOT EXISTS verification_codes (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      user_id INTEGER NOT NULL,
+      code TEXT NOT NULL,
+      purpose TEXT NOT NULL,
+      expires_at TIMESTAMP NOT NULL,
+      used INTEGER DEFAULT 0,
+      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+      FOREIGN KEY (user_id) REFERENCES users(id)
+    )
+  `);
+
+  // Clear & Re-seed schemes
   db.run(`DELETE FROM required_documents`);
   db.run(`DELETE FROM eligibility_rules`);
   db.run(`DELETE FROM schemes`);
@@ -314,7 +344,7 @@ db.serialize(() => {
     );
   });
 
-  console.log('✅ SQLite Database successfully seeded with 5 Real Tamil Nadu Welfare Schemes!');
+  console.log('✅ SQLite Database successfully seeded with 5 Schemes & Auth Schema (users + verification_codes)!');
 });
 
 db.close();

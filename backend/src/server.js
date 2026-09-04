@@ -10,6 +10,7 @@ import { fileURLToPath } from 'url';
 import { parseConversationToProfile } from './services/profileParser.js';
 import { matchProfileToSchemes } from './services/eligibilityEngine.js';
 import { processDocumentCheck } from './services/ocrService.js';
+import authRoutes from './routes/authRoutes.js';
 
 dotenv.config();
 
@@ -25,6 +26,9 @@ app.use(cors());
 app.use(express.json({ limit: '10mb' }));
 
 const upload = multer({ storage: multer.memoryStorage() });
+
+// Mount Auth API Routes (/api/auth/*)
+app.use('/api/auth', authRoutes);
 
 // 1. GET /api/schemes - Fetch seeded database schemes
 app.get('/api/schemes', (req, res) => {
