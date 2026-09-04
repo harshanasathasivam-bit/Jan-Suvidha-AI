@@ -1,195 +1,243 @@
 import React, { useState } from 'react';
 import { useApp } from '../context/AppContext';
-import { ShieldCheck, Phone, Lock, Sparkles, UserCheck, ArrowRight, KeyRound } from 'lucide-react';
+import { Mail, Lock, User, MapPin, DollarSign, KeyRound, CheckCircle2, ArrowRight, ShieldCheck, RefreshCw } from 'lucide-react';
 
 export function LoginPage() {
-  const { lang, t, loginUser } = useApp();
+  const { lang, t, loginUser, setActiveTab } = useApp();
 
-  const [activeSubTab, setActiveSubTab] = useState('demo'); // 'mobile' or 'demo'
-  const [phone, setPhone] = useState('');
-  const [otpSent, setOtpSent] = useState(false);
-  const [otp, setOtp] = useState('');
+  const [mode, setMode] = useState('login'); // 'login' or 'register'
+  const [step, setStep] = useState('credentials'); // 'credentials' or 'verify_email'
 
-  const handleSendOtp = (e) => {
+  // Form Fields
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [name, setName] = useState('');
+  const [district, setDistrict] = useState('Chennai');
+  const [income, setIncome] = useState('120000');
+
+  // Verification state
+  const [generatedCode, setGeneratedCode] = useState('');
+  const [inputCode, setInputCode] = useState('');
+  const [codeError, setCodeError] = useState('');
+
+  const handleStartAuth = (e) => {
     e.preventDefault();
-    if (!phone.trim()) return;
-    setOtpSent(true);
+    if (!email || !password) return;
+
+    // Generate realistic 6-digit email verification code
+    const code = Math.floor(100000 + Math.random() * 900000).toString();
+    setGeneratedCode(code);
+    setStep('verify_email');
   };
 
-  const handleVerifyOtp = (e) => {
+  const handleVerifyEmailCode = (e) => {
     e.preventDefault();
+    if (inputCode.trim() !== generatedCode) {
+      setCodeError(lang === 'ta' ? 'தவறான குறியீடு. தயவுசெய்து மீண்டும் முயற்சிக்கவும்.' : 'Invalid verification code. Please check and retry.');
+      return;
+    }
+
+    // Auth Successful
     loginUser({
-      name: 'Lakshmi Devi',
-      aadhaar: 'XXXX-XXXX-4892',
-      phone: phone || '9876543210',
-      district: 'Chennai',
-      income: 120000,
+      name: name || email.split('@')[0] || 'Citizen',
+      email: email,
+      district: district,
+      income: parseInt(income, 10) || 120000,
+      aadhaar: 'XXXX-XXXX-' + Math.floor(1000 + Math.random() * 9000),
+      isVerified: true,
       profile: {
         age: 24,
         gender: 'female',
-        annual_family_income: 120000,
+        annual_family_income: parseInt(income, 10) || 120000,
         ration_card_head: true,
         school_type_6_to_12: 'tn_govt_school',
-        district: 'Chennai'
+        district: district
       }
     });
-  };
 
-  const handleDemoLogin = (demoType) => {
-    if (demoType === 'lakshmi') {
-      loginUser({
-        name: 'Lakshmi Devi',
-        aadhaar: 'XXXX-XXXX-4892',
-        phone: '9876543210',
-        district: 'Chennai',
-        income: 120000,
-        profile: {
-          age: 24,
-          gender: 'female',
-          annual_family_income: 120000,
-          ration_card_head: true,
-          school_type_6_to_12: 'tn_govt_school',
-          education_course_type: 'regular_higher_education',
-          marital_status: 'married',
-          district: 'Chennai'
-        }
-      });
-    } else if (demoType === 'priya') {
-      loginUser({
-        name: 'Priya S.',
-        aadhaar: 'XXXX-XXXX-9102',
-        phone: '9845123456',
-        district: 'Madurai',
-        income: 95000,
-        profile: {
-          age: 20,
-          gender: 'female',
-          annual_family_income: 95000,
-          ration_card_head: false,
-          school_type_6_to_12: 'tn_govt_school',
-          education_course_type: 'regular_higher_education',
-          marital_status: 'single',
-          district: 'Madurai'
-        }
-      });
-    } else {
-      loginUser({
-        name: 'Meenakshi M.',
-        aadhaar: 'XXXX-XXXX-3341',
-        phone: '9789012345',
-        district: 'Coimbatore',
-        income: 70000,
-        profile: {
-          age: 58,
-          gender: 'female',
-          annual_family_income: 70000,
-          ration_card_head: true,
-          school_type_6_to_12: 'tn_govt_school',
-          marital_status: 'widowed',
-          district: 'Coimbatore'
-        }
-      });
-    }
+    // Jump straight to Dashboard or Scheme Match
+    setActiveTab('dashboard');
   };
 
   return (
-    <div style={{ maxWidth: '520px', margin: '1rem auto' }}>
+    <div style={{ maxWidth: '520px', margin: '1.5rem auto' }}>
       <div className="glass-card" style={{ padding: '2rem' }}>
         <div style={{ textAlign: 'center', marginBottom: '1.75rem' }}>
           <div style={{ background: 'linear-gradient(135deg, #2563eb, #1d4ed8)', width: '56px', height: '56px', borderRadius: '16px', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 1rem', boxShadow: '0 8px 20px rgba(37, 99, 235, 0.3)' }}>
             <KeyRound size={28} color="#fff" />
           </div>
-          <h2 style={{ fontSize: '1.6rem', fontWeight: '800', marginBottom: '0.35rem' }}>{t.loginTitle}</h2>
-          <p style={{ fontSize: '0.88rem', color: '#94a3b8' }}>{t.loginSubtitle}</p>
+          <h2 style={{ fontSize: '1.6rem', fontWeight: '800', marginBottom: '0.35rem' }}>
+            {step === 'verify_email' ? t.verifyTitle : t.loginTitle}
+          </h2>
+          <p style={{ fontSize: '0.88rem', color: '#94a3b8' }}>
+            {step === 'verify_email' ? `${t.verifySubtitle} ${email}` : t.loginSubtitle}
+          </p>
         </div>
 
-        {/* Tab switch */}
-        <div style={{ display: 'flex', background: 'rgba(255,255,255,0.05)', padding: '4px', borderRadius: '10px', marginBottom: '1.5rem' }}>
-          <button 
-            type="button"
-            style={{ flex: 1, padding: '0.6rem', border: 'none', borderRadius: '8px', background: activeSubTab === 'demo' ? 'var(--accent-primary)' : 'transparent', color: '#fff', fontWeight: '600', fontSize: '0.88rem', cursor: 'pointer' }}
-            onClick={() => setActiveSubTab('demo')}
-          >
-            {t.loginTabDemo}
-          </button>
-          <button 
-            type="button"
-            style={{ flex: 1, padding: '0.6rem', border: 'none', borderRadius: '8px', background: activeSubTab === 'mobile' ? 'var(--accent-primary)' : 'transparent', color: '#fff', fontWeight: '600', fontSize: '0.88rem', cursor: 'pointer' }}
-            onClick={() => setActiveSubTab('mobile')}
-          >
-            {t.loginTabMobile}
-          </button>
-        </div>
-
-        {activeSubTab === 'demo' ? (
+        {step === 'credentials' ? (
           <div>
-            <p style={{ fontSize: '0.82rem', color: '#60a5fa', marginBottom: '1rem', textAlign: 'center', fontWeight: '500' }}>
-              💡 {t.demoLoginNotice}
-            </p>
-
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.85rem' }}>
-              <button className="btn-secondary" style={{ justifyContent: 'space-between', padding: '1rem' }} onClick={() => handleDemoLogin('lakshmi')}>
-                <span style={{ fontSize: '0.9rem', fontWeight: '600' }}>{t.demoUser1}</span>
-                <ArrowRight size={16} color="#60a5fa" />
+            {/* Dual Mode Switch: Sign In vs Register */}
+            <div style={{ display: 'flex', background: 'rgba(255,255,255,0.05)', padding: '4px', borderRadius: '10px', marginBottom: '1.5rem' }}>
+              <button 
+                type="button"
+                style={{ flex: 1, padding: '0.65rem', border: 'none', borderRadius: '8px', background: mode === 'login' ? 'var(--accent-primary)' : 'transparent', color: '#fff', fontWeight: '600', fontSize: '0.88rem', cursor: 'pointer' }}
+                onClick={() => setMode('login')}
+              >
+                {t.tabLogin}
               </button>
-
-              <button className="btn-secondary" style={{ justifyContent: 'space-between', padding: '1rem' }} onClick={() => handleDemoLogin('priya')}>
-                <span style={{ fontSize: '0.9rem', fontWeight: '600' }}>{t.demoUser2}</span>
-                <ArrowRight size={16} color="#60a5fa" />
-              </button>
-
-              <button className="btn-secondary" style={{ justifyContent: 'space-between', padding: '1rem' }} onClick={() => handleDemoLogin('meenakshi')}>
-                <span style={{ fontSize: '0.9rem', fontWeight: '600' }}>{t.demoUser3}</span>
-                <ArrowRight size={16} color="#60a5fa" />
+              <button 
+                type="button"
+                style={{ flex: 1, padding: '0.65rem', border: 'none', borderRadius: '8px', background: mode === 'register' ? 'var(--accent-primary)' : 'transparent', color: '#fff', fontWeight: '600', fontSize: '0.88rem', cursor: 'pointer' }}
+                onClick={() => setMode('register')}
+              >
+                {t.tabRegister}
               </button>
             </div>
-          </div>
-        ) : (
-          <form onSubmit={otpSent ? handleVerifyOtp : handleSendOtp}>
-            <div style={{ marginBottom: '1.25rem' }}>
-              <label style={{ display: 'block', fontSize: '0.85rem', color: '#94a3b8', marginBottom: '0.4rem', fontWeight: '500' }}>
-                {t.phoneLabel}
-              </label>
-              <div style={{ position: 'relative' }}>
-                <Phone size={18} color="#64748b" style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)' }} />
-                <input 
-                  type="text"
-                  className="chat-input"
-                  style={{ width: '100%', paddingLeft: '38px' }}
-                  placeholder={t.phonePlaceholder}
-                  value={phone}
-                  onChange={(e) => setPhone(e.target.value)}
-                  disabled={otpSent}
-                  required
-                />
-              </div>
-            </div>
 
-            {otpSent && (
-              <div style={{ marginBottom: '1.25rem' }}>
+            <form onSubmit={handleStartAuth}>
+              {mode === 'register' && (
+                <div style={{ marginBottom: '1.1rem' }}>
+                  <label style={{ display: 'block', fontSize: '0.85rem', color: '#94a3b8', marginBottom: '0.4rem', fontWeight: '500' }}>
+                    {t.nameLabel}
+                  </label>
+                  <div style={{ position: 'relative' }}>
+                    <User size={18} color="#64748b" style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)' }} />
+                    <input 
+                      type="text"
+                      className="chat-input"
+                      style={{ width: '100%', paddingLeft: '38px' }}
+                      placeholder={t.namePlaceholder}
+                      value={name}
+                      onChange={(e) => setName(e.target.value)}
+                      required
+                    />
+                  </div>
+                </div>
+              )}
+
+              <div style={{ marginBottom: '1.1rem' }}>
                 <label style={{ display: 'block', fontSize: '0.85rem', color: '#94a3b8', marginBottom: '0.4rem', fontWeight: '500' }}>
-                  {t.otpLabel}
+                  {t.emailLabel}
                 </label>
                 <div style={{ position: 'relative' }}>
-                  <Lock size={18} color="#64748b" style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)' }} />
+                  <Mail size={18} color="#64748b" style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)' }} />
                   <input 
-                    type="text"
+                    type="email"
                     className="chat-input"
                     style={{ width: '100%', paddingLeft: '38px' }}
-                    placeholder={t.otpPlaceholder}
-                    value={otp}
-                    onChange={(e) => setOtp(e.target.value)}
+                    placeholder={t.emailPlaceholder}
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
                     required
                   />
                 </div>
               </div>
-            )}
 
-            <button type="submit" className="btn-primary" style={{ width: '100%', marginTop: '0.5rem' }}>
-              <span>{otpSent ? t.verifyLoginBtn : t.sendOtpBtn}</span>
-              <ArrowRight size={18} />
-            </button>
-          </form>
+              <div style={{ marginBottom: '1.1rem' }}>
+                <label style={{ display: 'block', fontSize: '0.85rem', color: '#94a3b8', marginBottom: '0.4rem', fontWeight: '500' }}>
+                  {t.passwordLabel}
+                </label>
+                <div style={{ position: 'relative' }}>
+                  <Lock size={18} color="#64748b" style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)' }} />
+                  <input 
+                    type="password"
+                    className="chat-input"
+                    style={{ width: '100%', paddingLeft: '38px' }}
+                    placeholder={t.passwordPlaceholder}
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    required
+                  />
+                </div>
+              </div>
+
+              {mode === 'register' && (
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem', marginBottom: '1.1rem' }}>
+                  <div>
+                    <label style={{ display: 'block', fontSize: '0.82rem', color: '#94a3b8', marginBottom: '0.4rem', fontWeight: '500' }}>
+                      {t.districtLabel}
+                    </label>
+                    <select 
+                      className="chat-input" 
+                      style={{ width: '100%', padding: '0.75rem' }}
+                      value={district}
+                      onChange={(e) => setDistrict(e.target.value)}
+                    >
+                      <option value="Chennai">Chennai</option>
+                      <option value="Coimbatore">Coimbatore</option>
+                      <option value="Madurai">Madurai</option>
+                      <option value="Tiruchirappalli">Tiruchirappalli</option>
+                      <option value="Salem">Salem</option>
+                      <option value="Vellore">Vellore</option>
+                    </select>
+                  </div>
+
+                  <div>
+                    <label style={{ display: 'block', fontSize: '0.82rem', color: '#94a3b8', marginBottom: '0.4rem', fontWeight: '500' }}>
+                      {t.incomeLabel}
+                    </label>
+                    <input 
+                      type="number"
+                      className="chat-input"
+                      style={{ width: '100%' }}
+                      value={income}
+                      onChange={(e) => setIncome(e.target.value)}
+                      required
+                    />
+                  </div>
+                </div>
+              )}
+
+              <button type="submit" className="btn-primary" style={{ width: '100%', marginTop: '0.5rem' }}>
+                <span>{mode === 'login' ? t.submitLoginBtn : t.submitRegisterBtn}</span>
+                <ArrowRight size={18} />
+              </button>
+            </form>
+          </div>
+        ) : (
+          /* Step 2: Realistic Email Verification Code Screen */
+          <div>
+            <div style={{ background: 'rgba(37, 99, 235, 0.15)', border: '1px solid rgba(37, 99, 235, 0.3)', padding: '1rem', borderRadius: '12px', textAlign: 'center', marginBottom: '1.5rem' }}>
+              <div style={{ fontSize: '0.85rem', color: '#94a3b8', marginBottom: '0.25rem' }}>{t.simulatedCodeBanner}</div>
+              <div style={{ fontSize: '1.8rem', fontWeight: '800', letterSpacing: '4px', color: '#60a5fa' }}>{generatedCode}</div>
+            </div>
+
+            <form onSubmit={handleVerifyEmailCode}>
+              <div style={{ marginBottom: '1.25rem' }}>
+                <label style={{ display: 'block', fontSize: '0.85rem', color: '#94a3b8', marginBottom: '0.4rem', fontWeight: '500' }}>
+                  {t.codeLabel}
+                </label>
+                <input 
+                  type="text"
+                  className="chat-input"
+                  style={{ width: '100%', textAlign: 'center', fontSize: '1.25rem', letterSpacing: '3px' }}
+                  placeholder={t.codePlaceholder}
+                  maxLength={6}
+                  value={inputCode}
+                  onChange={(e) => {
+                    setInputCode(e.target.value);
+                    setCodeError('');
+                  }}
+                  required
+                />
+                {codeError && <div style={{ color: '#f87171', fontSize: '0.82rem', marginTop: '0.4rem' }}>{codeError}</div>}
+              </div>
+
+              <button type="submit" className="btn-primary" style={{ width: '100%' }}>
+                <ShieldCheck size={18} />
+                <span>{t.verifyBtn}</span>
+              </button>
+
+              <button 
+                type="button" 
+                className="btn-secondary" 
+                style={{ width: '100%', marginTop: '0.75rem' }}
+                onClick={() => setStep('credentials')}
+              >
+                <span>Change Email / Back</span>
+              </button>
+            </form>
+          </div>
         )}
       </div>
     </div>
