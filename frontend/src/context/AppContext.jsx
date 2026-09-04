@@ -149,6 +149,8 @@ export function AppProvider({ children }) {
     updateProfileAndMatch({});
   }, []);
 
+  const [authMode, setAuthMode] = useState('register'); // 'register' or 'login'
+
   return (
     <AppContext.Provider
       value={{
@@ -158,6 +160,8 @@ export function AppProvider({ children }) {
         t,
         activeTab,
         setActiveTab: setTabGated,
+        authMode,
+        setAuthMode,
         token,
         isLoggedIn,
         currentUser,

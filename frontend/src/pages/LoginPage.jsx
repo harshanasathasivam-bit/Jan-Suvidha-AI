@@ -3,10 +3,16 @@ import { useApp } from '../context/AppContext';
 import { Mail, Lock, User, MapPin, KeyRound, CheckCircle2, ArrowRight, ShieldCheck, RefreshCw, AlertCircle } from 'lucide-react';
 
 export function LoginPage() {
-  const { lang, t, loginWithToken } = useApp();
+  const { lang, t, loginWithToken, authMode, setAuthMode } = useApp();
 
-  const [mode, setMode] = useState('login'); // 'login' or 'register'
+  const [mode, setMode] = useState(authMode || 'register'); // 'login' or 'register'
   const [step, setStep] = useState('credentials'); // 'credentials', 'verify_email', 'verify_login'
+
+  useEffect(() => {
+    if (authMode) {
+      setMode(authMode);
+    }
+  }, [authMode]);
 
   // Form Fields
   const [name, setName] = useState('');

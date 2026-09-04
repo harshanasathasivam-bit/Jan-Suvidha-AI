@@ -1,9 +1,9 @@
 import React from 'react';
 import { useApp } from '../context/AppContext';
-import { Globe, User, LogIn, LayoutDashboard, UserCheck, ShieldCheck, Home } from 'lucide-react';
+import { Globe, User, LogIn, UserPlus, LayoutDashboard, UserCheck, ShieldCheck, Home } from 'lucide-react';
 
 export function Header() {
-  const { lang, toggleLanguage, t, activeTab, setActiveTab, isLoggedIn, currentUser, profileCompleted, schemeMatches } = useApp();
+  const { lang, toggleLanguage, t, activeTab, setActiveTab, isLoggedIn, currentUser, profileCompleted, schemeMatches, setAuthMode } = useApp();
 
   const eligibleCount = schemeMatches.filter(s => s.status === 'ELIGIBLE' || s.status === 'PARTIALLY_ELIGIBLE').length;
 
@@ -38,10 +38,25 @@ export function Header() {
                 </button>
               </div>
             ) : (
-              <button className="lang-btn" style={{ background: 'rgba(37, 99, 235, 0.2)', borderColor: 'rgba(37, 99, 235, 0.4)', color: '#60a5fa' }} onClick={() => setActiveTab('login')}>
-                <LogIn size={16} />
-                <span>{t.navLogin}</span>
-              </button>
+              <div style={{ display: 'flex', gap: '0.5rem' }}>
+                <button 
+                  className="lang-btn" 
+                  style={{ background: 'var(--accent-primary)', borderColor: 'var(--accent-primary)', color: '#fff', fontWeight: '600', boxShadow: '0 2px 8px rgba(37,99,235,0.4)' }} 
+                  onClick={() => { setAuthMode('register'); setActiveTab('login'); }}
+                >
+                  <UserPlus size={16} />
+                  <span>{t.navRegister || 'Register'}</span>
+                </button>
+
+                <button 
+                  className="lang-btn" 
+                  style={{ background: 'rgba(255, 255, 255, 0.08)', borderColor: 'rgba(255, 255, 255, 0.15)', color: '#f1f5f9' }} 
+                  onClick={() => { setAuthMode('login'); setActiveTab('login'); }}
+                >
+                  <LogIn size={16} />
+                  <span>{t.navLogin || 'Login'}</span>
+                </button>
+              </div>
             )}
           </div>
         </div>

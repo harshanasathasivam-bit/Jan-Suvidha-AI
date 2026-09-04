@@ -1,14 +1,15 @@
 import React from 'react';
 import { useApp } from '../context/AppContext';
-import { ShieldCheck, ArrowRight, Award, LogIn, Sparkles, LayoutDashboard } from 'lucide-react';
+import { ShieldCheck, ArrowRight, Award, LogIn, UserPlus, Sparkles, LayoutDashboard } from 'lucide-react';
 
 export function LandingPage() {
-  const { t, setActiveTab, isLoggedIn } = useApp();
+  const { t, setActiveTab, isLoggedIn, setAuthMode } = useApp();
 
   const handleStartEligibility = () => {
     if (isLoggedIn) {
       setActiveTab('chat');
     } else {
+      setAuthMode('register');
       setActiveTab('login');
     }
   };
@@ -39,10 +40,17 @@ export function LandingPage() {
             <span>{t.navDashboard}</span>
           </button>
         ) : (
-          <button className="btn-secondary" style={{ background: 'rgba(37, 99, 235, 0.15)', borderColor: 'rgba(37, 99, 235, 0.3)', color: '#60a5fa' }} onClick={() => setActiveTab('login')}>
-            <LogIn size={18} />
-            <span>{t.loginHeroBtn}</span>
-          </button>
+          <>
+            <button className="btn-secondary" style={{ background: 'var(--accent-primary)', borderColor: 'var(--accent-primary)', color: '#ffffff', fontWeight: '600' }} onClick={() => { setAuthMode('register'); setActiveTab('login'); }}>
+              <UserPlus size={18} />
+              <span>{t.navRegister || 'Register Account'}</span>
+            </button>
+
+            <button className="btn-secondary" style={{ background: 'rgba(255, 255, 255, 0.08)', borderColor: 'rgba(255, 255, 255, 0.15)', color: '#f1f5f9' }} onClick={() => { setAuthMode('login'); setActiveTab('login'); }}>
+              <LogIn size={18} />
+              <span>{t.navLogin || 'Login'}</span>
+            </button>
+          </>
         )}
       </div>
 
