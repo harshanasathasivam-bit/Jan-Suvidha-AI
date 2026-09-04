@@ -9,7 +9,8 @@ import {
   UserCheck, 
   LayoutDashboard, 
   UserPlus, 
-  LogIn 
+  LogIn,
+  PlayCircle
 } from 'lucide-react';
 
 export function Header() {
@@ -21,10 +22,30 @@ export function Header() {
     setActiveTab, 
     schemeMatches,
     isLoggedIn,
-    setAuthMode
+    setAuthMode,
+    updateProfileAndMatch
   } = useApp();
 
   const eligibleCount = schemeMatches.filter(s => s.status === 'ELIGIBLE').length;
+
+  const handleTryFarmerDemo = () => {
+    const demoFarmer = {
+      name: 'Murugan (Farmer Demo)',
+      age: 45,
+      gender: 'male',
+      occupation: 'farmer',
+      annual_family_income: 120000,
+      family_size: 4,
+      state_domicile: 'tamil_nadu',
+      district: 'Thanjavur',
+      ration_card_head: true,
+      ration_card_holder: true,
+      owns_pucca_house: false,
+      owns_four_wheeler: false
+    };
+    updateProfileAndMatch(demoFarmer);
+    setActiveTab('results');
+  };
 
   return (
     <header className="header">
@@ -80,6 +101,21 @@ export function Header() {
 
           {/* Controls: Language and Auth */}
           <div className="nav-controls">
+            <button 
+              className="lang-btn" 
+              onClick={handleTryFarmerDemo}
+              style={{
+                background: 'linear-gradient(135deg, rgba(16,185,129,0.2) 0%, rgba(5,150,105,0.3) 100%)',
+                borderColor: '#10b981',
+                color: '#34d399',
+                fontWeight: '600'
+              }}
+              title="Instant Farmer Demo Profile"
+            >
+              <PlayCircle size={14} />
+              <span>TRY DEMO</span>
+            </button>
+
             <button className="lang-btn" onClick={toggleLanguage} title="Switch Language / மொழியை மாற்றவும்">
               <Globe size={15} />
               <span>{lang === 'en' ? 'தமிழ்' : 'English'}</span>

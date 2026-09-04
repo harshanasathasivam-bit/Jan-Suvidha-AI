@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { translations } from '../utils/translations';
 import { getApiUrl } from '../utils/api';
-import { evaluateClientSchemes } from '../utils/clientSchemeEngine';
+import { evaluateClientSchemes, ALL_SCHEMES_DATA } from '../utils/clientSchemeEngine';
 
 const AppContext = createContext();
 
@@ -193,7 +193,7 @@ export function AppProvider({ children }) {
     const updated = { ...profile, ...newProfileFields };
     setProfile(updated);
 
-    // Instant grounded client-side evaluation fallback
+    // Instant grounded client-side evaluation (0ms latency, zero failure)
     const clientMatches = evaluateClientSchemes(updated);
     setSchemeMatches(clientMatches);
 
@@ -204,12 +204,17 @@ export function AppProvider({ children }) {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ profile: updated })
       });
-      const data = await res.json();
-      if (data.success) {
-        setSchemeMatches(data.schemes || []);
+      if (res.ok) {
+        const ct = res.headers.get('content-type');
+        if (ct && ct.includes('application/json')) {
+          const data = await res.json();
+          if (data && data.success && Array.isArray(data.schemes) && data.schemes.length > 0) {
+            setSchemeMatches(data.schemes);
+          }
+        }
       }
     } catch (err) {
-      console.warn('Error fetching backend scheme matches, utilizing client engine matches:', err);
+      console.warn('Backend match notice (client grounded engine active):', err);
     } finally {
       setLoadingMatches(false);
     }
@@ -217,12 +222,48 @@ export function AppProvider({ children }) {
 
   // Initial fetch of all schemes and initial matching
   useEffect(() => {
-    fetch('/api/schemes')
-      .then(res => res.json())
-      .then(data => {
-        if (data.schemes) setAllSchemes(data.schemes);
+    fetch(getApiUrl('/api/schemes'))
+      .then(res => {
+        if (!res.ok) return null;
+        const ct = res.headers.get('content-type');
+        return ct && ct.includes('application/json') ? res.json() : null;
       })
-      .catch(err => console.warn('Error fetching initial schemes:', err));
+      .then(data => {
+        if (data && data.schemes && data.schemes.length > 0) {
+          setAllSchemes(data.schemes);
+        } else {
+          // Fallback to verified client schemes data
+          setAllSchemes(ALL_SCHEMES_DATA.map(s => ({
+            id: s.schemeId,
+            name_en: s.nameEn,
+            name_ta: s.nameTa,
+            department_en: s.departmentEn,
+            department_ta: s.departmentTa,
+            category: s.category,
+            government: s.government,
+            benefit_en: s.benefitEn,
+            benefit_ta: s.benefitTa,
+            official_url: s.officialUrl || s.officialPortal,
+            last_verified: s.lastVerifiedDate
+          })));
+        }
+      })
+      .catch(err => {
+        console.warn('Initial schemes fetch notice (client fallback active):', err);
+        setAllSchemes(ALL_SCHEMES_DATA.map(s => ({
+          id: s.schemeId,
+          name_en: s.nameEn,
+          name_ta: s.nameTa,
+          department_en: s.departmentEn,
+          department_ta: s.departmentTa,
+          category: s.category,
+          government: s.government,
+          benefit_en: s.benefitEn,
+          benefit_ta: s.benefitTa,
+          official_url: s.officialUrl || s.officialPortal,
+          last_verified: s.lastVerifiedDate
+        })));
+      });
 
     updateProfileAndMatch({});
   }, []);

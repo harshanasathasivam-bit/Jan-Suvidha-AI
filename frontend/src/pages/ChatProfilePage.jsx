@@ -60,13 +60,18 @@ export function ChatProfilePage() {
         body: JSON.stringify({ messages: updatedMessages, currentProfile: profile })
       });
       if (res.ok) {
-        const data = await res.json();
-        if (data.success && data.profile) {
-          parsedProfile = data.profile;
+        const contentType = res.headers.get('content-type');
+        if (contentType && contentType.includes('application/json')) {
+          const data = await res.json();
+          if (data.success && data.profile) {
+            parsedProfile = data.profile;
+          }
         }
       }
     } catch (err) {
-      console.warn('Backend parse API unavailable, using client NLP parser:', err);
+      console.warn('Backend parse API notice, using client parser:', err);
+    } finally {
+      setLoading(false);
     }
 
     // 2. Client NLP parser fallback if API failed or offline
@@ -79,20 +84,20 @@ export function ChatProfilePage() {
 
     // Compute top matches for conversational bot response
     const matches = evaluateClientSchemes(parsedProfile);
-    const eligibleSchemes = matches.filter(s => s.status === 'ELIGIBLE');
+    const eligibleSchemes = matches.filter(s => s.status === 'ELIGIBLE' || s.status === 'PARTIALLY_ELIGIBLE');
 
     // 4. Construct natural language response in current language
     let botReply = '';
     if (lang === 'ta') {
       botReply = `சுயவிவர விவரங்கள் கணக்கிடப்பட்டன:\n` +
         `• வயது: ${parsedProfile.age || '-'}\n` +
-        `• தொழில்: ${parsedProfile.occupation || 'குடிமகன்/விவசாயி'}\n` +
+        `• தொழில்: ${parsedProfile.occupation === 'farmer' ? 'விவசாயி' : (parsedProfile.occupation || 'குடிமகன்')}\n` +
         `• குடும்ப வருமானம்: ₹${parsedProfile.annual_family_income ? Number(parsedProfile.annual_family_income).toLocaleString('en-IN') : '-'}\n` +
         `• மாவட்டம்: ${parsedProfile.district || 'தஞ்சாவூர்'}\n\n` +
-        `🎯 உங்களுகக்கான பொருத்தமான அரசு திட்டங்கள் (${eligibleSchemes.length} தகுதிகள்):\n` +
+        `🎯 உங்களுக்கான பொருத்தமான அரசு திட்டங்கள் (${eligibleSchemes.length} வாய்ப்புகள்):\n` +
         (eligibleSchemes.length > 0
-          ? eligibleSchemes.slice(0, 3).map(s => `✓ ${s.scheme_name_ta || s.scheme_name_en}`).join('\n')
-          : `✓ தமிழ்நாடு முதல்வரின் விரிவான மருத்துவக் காப்பீட்டுத் திட்டம்`) +
+          ? eligibleSchemes.slice(0, 3).map(s => `✓ ${s.nameTa || s.nameEn}`).join('\n')
+          : `✓ முதலமைச்சரின் உழவர் பாதுகாப்புத் திட்டம்`) +
         `\n\nமுழு விவரங்களைக் காண "பொருத்தமான திட்டங்களைப் பார்" பொத்தானைக் கிளிக் செய்யவும்!`;
     } else {
       botReply = `Citizen Profile Captured & Verified:\n` +
@@ -100,10 +105,10 @@ export function ChatProfilePage() {
         `• Occupation: ${parsedProfile.occupation || 'Farmer/Citizen'}\n` +
         `• Annual Income: ₹${parsedProfile.annual_family_income ? Number(parsedProfile.annual_family_income).toLocaleString('en-IN') : '-'}\n` +
         `• District: ${parsedProfile.district || 'Thanjavur'}\n\n` +
-        `🎯 Grounded Scheme Matches (${eligibleSchemes.length} Eligible):\n` +
+        `🎯 Grounded Scheme Matches (${eligibleSchemes.length} Potential/Eligible):\n` +
         (eligibleSchemes.length > 0
-          ? eligibleSchemes.slice(0, 3).map(s => `✓ ${s.scheme_name_en} (${s.financial_benefit_en || 'Official Benefit'})`).join('\n')
-          : `✓ TN CM Comprehensive Health Insurance Scheme`) +
+          ? eligibleSchemes.slice(0, 3).map(s => `✓ ${s.nameEn} (${s.benefitEn || 'Official Benefit'})`).join('\n')
+          : `✓ Chief Minister's Uzhavar Pathukappu Thittam`) +
         `\n\nClick "Proceed to Grounded Scheme Matches" to view complete eligibility breakdown!`;
     }
 

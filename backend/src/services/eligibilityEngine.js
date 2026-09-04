@@ -3,8 +3,46 @@ import { getDb } from '../db/getDb.js';
 /**
  * Match a profile against seeded real Tamil Nadu and Central schemes with Explainable Breakdown
  */
-export async function matchProfileToSchemes(profile) {
+export async function matchProfileToSchemes(rawProfile = {}) {
   const db = getDb();
+
+  // Robust profile normalization (Tamil + English + type safety)
+  const normOcc = String(rawProfile.occupation || '').trim().toLowerCase();
+  let occupation = normOcc;
+  if (['farmer', 'farming', 'agriculture', 'cultivator', 'விவசாயி', 'விவசாயம்'].some(k => normOcc.includes(k))) {
+    occupation = 'farmer';
+  } else if (['student', 'மாணவி', 'மாணவர்', 'படிப்பு', 'college'].some(k => normOcc.includes(k))) {
+    occupation = 'student';
+  } else if (['daily wage', 'coolie', 'கூலி', 'தொழிலாளி', 'worker'].some(k => normOcc.includes(k))) {
+    occupation = 'daily_wage';
+  }
+
+  const normGender = String(rawProfile.gender || '').trim().toLowerCase();
+  let gender = normGender;
+  if (['female', 'woman', 'girl', 'பெண்', 'மாணவி'].some(k => normGender.includes(k))) {
+    gender = 'female';
+  } else if (['male', 'man', 'boy', 'ஆண்'].some(k => normGender.includes(k))) {
+    gender = 'male';
+  } else if (['transgender', 'திருநங்கை'].some(k => normGender.includes(k))) {
+    gender = 'transgender';
+  }
+
+  let annual_family_income = rawProfile.annual_family_income !== undefined && rawProfile.annual_family_income !== null 
+    ? Number(String(rawProfile.annual_family_income).replace(/[^0-9.]/g, '')) 
+    : null;
+
+  let age = rawProfile.age !== undefined && rawProfile.age !== null 
+    ? Number(String(rawProfile.age).replace(/[^0-9]/g, '')) 
+    : null;
+
+  const profile = {
+    ...rawProfile,
+    occupation,
+    gender,
+    annual_family_income,
+    age,
+    state_domicile: rawProfile.state_domicile || 'tamil_nadu'
+  };
 
   return new Promise((resolve, reject) => {
     db.all(`SELECT * FROM schemes WHERE is_active = 1`, async (err, schemes) => {
@@ -79,7 +117,8 @@ export async function matchProfileToSchemes(profile) {
                 break;
               case 'IN': {
                 const allowed = rule.field_value.split(',').map(s => s.trim().toLowerCase());
-                matches = allowed.includes(String(userVal).trim().toLowerCase());
+                const normVal = String(userVal).trim().toLowerCase();
+                matches = allowed.includes(normVal) || allowed.some(a => normVal.includes(a) || a.includes(normVal));
                 break;
               }
               default:

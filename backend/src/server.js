@@ -36,7 +36,41 @@ const upload = multer({ storage: multer.memoryStorage() });
 // Mount Auth API Routes (/api/auth/*)
 app.use('/api/auth', authRoutes);
 
-// Mount Profile API Routes (/api/profile/*)
+// Conversational profile parsing endpoint (guest friendly, no auth required)
+app.post(['/api/parse-profile', '/api/profile/parse'], (req, res) => {
+  try {
+    const { messages, currentProfile } = req.body;
+    if (!messages || !Array.isArray(messages)) {
+      return res.status(400).json({ error: 'Messages array is required' });
+    }
+    const updatedProfile = parseConversationToProfile(messages, currentProfile || {});
+    res.json({
+      success: true,
+      profile: updatedProfile
+    });
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to process profile', details: err.message });
+  }
+});
+
+// If POST /api/profile is called with messages (conversational), handle without auth
+app.post('/api/profile', (req, res, next) => {
+  if (req.body && req.body.messages && Array.isArray(req.body.messages)) {
+    try {
+      const { messages, currentProfile } = req.body;
+      const updatedProfile = parseConversationToProfile(messages, currentProfile || {});
+      return res.json({
+        success: true,
+        profile: updatedProfile
+      });
+    } catch (err) {
+      return res.status(500).json({ error: 'Failed to process profile', details: err.message });
+    }
+  }
+  next();
+});
+
+// Mount Profile API Routes (/api/profile/*) for authenticated user profile management
 app.use('/api/profile', profileRoutes);
 
 import { getDb } from './db/getDb.js';

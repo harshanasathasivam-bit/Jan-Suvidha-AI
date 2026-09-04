@@ -653,7 +653,65 @@ db.serialize(() => {
     ]
   );
 
-  console.log('✅ SQLite Database successfully seeded with 19 Real Tamil Nadu & Central Government Schemes!');
+  // 20. Chief Minister's Uzhavar Pathukappu Thittam (Farmers Social Security Scheme)
+  insertScheme(
+    {
+      id: 'uzhavar_pathukappu',
+      name_en: "Chief Minister's Uzhavar Pathukappu Thittam (Farmers Social Security Scheme)",
+      name_ta: 'முதலமைச்சரின் உழவர் பாதுகாப்புத் திட்டம்',
+      department_en: 'Revenue & Disaster Management Department, Govt. of Tamil Nadu',
+      department_ta: 'வருவாய் மற்றும் பேரிடர் மேலாண்மைத் துறை',
+      official_portal: 'https://www.tn.gov.in',
+      benefit_en: 'Social security pension (₹1,000/month), natural death & accident grants, educational assistance, and marriage assistance for small farmers & agricultural laborers.',
+      benefit_ta: 'விவசாயிகள் மற்றும் விவசாய தொழிலாளர்களுக்கு மாதம் ₹1,000 ஓய்வூதியம், விபத்து நிவாரணம் மற்றும் குடும்ப நல உதவிகள்.',
+      monthly_benefit_amount: 1000,
+      annual_benefit_amount: 12000,
+      category: 'Agriculture',
+      government: 'Government of Tamil Nadu',
+      policy_notes_2026_en: 'Verified Tamil Nadu Farmer Welfare Scheme under Revenue Administration.'
+    },
+    [
+      { field_name: 'occupation', operator: 'IN', field_value: 'farmer,agriculture,farming,விவசாயி,விவசாயம்', en: 'Must be a farmer or agricultural worker', ta: 'விவசாயி அல்லது விவசாய தொழிலாளியாக இருக்க வேண்டும்' },
+      { field_name: 'state_domicile', operator: 'EQUALS', field_value: 'tamil_nadu', en: 'Resident of Tamil Nadu', ta: 'தமிழ்நாட்டில் வசிப்பவராக இருக்க வேண்டும்' },
+      { field_name: 'annual_family_income', operator: 'LTE', field_value: '250000', en: 'Family annual income below ₹2,50,000', ta: 'குடும்ப ஆண்டு வருமானம் ₹2,50,000க்குள் இருக்க வேண்டும்' }
+    ],
+    [
+      { key: 'aadhaar_card', en: 'Aadhaar Card', ta: 'ஆதார் அட்டை' },
+      { key: 'smart_ration_card', en: 'Smart Family Ration Card', ta: 'ஸ்மார்ட் குடும்ப அட்டை' },
+      { key: 'farmer_id_or_patta', en: 'Uzhavar Card / Land Patta or Agricultural Labourer Certificate', ta: 'உழவர் அட்டை / பட்டா அல்லது விவசாய தொழிலாளர் சான்று' },
+      { key: 'bank_passbook', en: 'Bank Passbook (NPCI linked)', ta: 'வங்கி கணக்கு புத்தகம்' }
+    ]
+  );
+
+  // 21. PM-KISAN (Pradhan Mantri Kisan Samman Nidhi)
+  insertScheme(
+    {
+      id: 'pm_kisan',
+      name_en: 'Pradhan Mantri Kisan Samman Nidhi (PM-KISAN)',
+      name_ta: 'பிரதமர் கிசான் சம்மான் நிதி (PM-KISAN)',
+      department_en: 'Agriculture & Farmers Welfare Department, Govt. of Tamil Nadu / GoI',
+      department_ta: 'வேளாண்மை மற்றும் உழவர் நலத்துறை',
+      official_portal: 'https://pmkisan.gov.in',
+      benefit_en: 'Direct income support of ₹6,000/year credited directly into bank account in 3 equal installments of ₹2,000.',
+      benefit_ta: 'ஆண்டுக்கு ₹6,000 நேரடி உதவித்தொகை (ரூ.2,000 வீதம் 3 தவணைகளில்) வங்கி கணக்கில் நேரடியாக வரவு வைக்கப்படுகிறது.',
+      monthly_benefit_amount: 500,
+      annual_benefit_amount: 6000,
+      category: 'Agriculture',
+      government: 'Government of India / Tamil Nadu',
+      policy_notes_2026_en: 'Active nationwide DBT scheme for cultivable landholding farmer families.'
+    },
+    [
+      { field_name: 'occupation', operator: 'IN', field_value: 'farmer,agriculture,farming,விவசாயி,விவசாயம்', en: 'Must be a farmer or engaged in agriculture', ta: 'விவசாயத் தொழிலில் ஈடுபட்டுள்ளவராக இருக்க வேண்டும்' },
+      { field_name: 'annual_family_income', operator: 'LTE', field_value: '250000', en: 'Annual income within eligible bracket', ta: 'ஆண்டு வருமான வரம்பிற்குள் இருக்க வேண்டும்' }
+    ],
+    [
+      { key: 'aadhaar_card', en: 'Aadhaar Card (Aadhaar linked)', ta: 'ஆதார் கார்டு' },
+      { key: 'land_patta', en: 'Land Record Document (Patta / Chitta)', ta: 'நில உரிமை ஆவணம் (பட்டா / சிட்டா)' },
+      { key: 'bank_passbook', en: 'Bank Account Details', ta: 'வங்கி கணக்கு விவரம்' }
+    ]
+  );
+
+  console.log('✅ SQLite Database successfully seeded with 21 Real Tamil Nadu & Central Government Schemes!');
 });
 
 db.close();
