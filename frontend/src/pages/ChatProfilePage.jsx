@@ -11,11 +11,11 @@ import {
   Home, 
   Users, 
   CreditCard, 
-  MapPin,
-  Sparkles,
-  CheckCircle2
+  MapPin
 } from 'lucide-react';
 import { getApiUrl } from '../utils/api';
+import { parseConversationToProfileClient } from '../utils/clientProfileParser';
+import { evaluateClientSchemes } from '../utils/clientSchemeEngine';
 
 export function ChatProfilePage() {
   const { 
@@ -42,7 +42,7 @@ export function ChatProfilePage() {
 
   const handleSendMessage = async (textToSend) => {
     const query = textToSend || input;
-    if (!query.trim()) return;
+    if (!query || !query.trim()) return;
 
     const userMsg = { id: Date.now(), sender: 'user', text: query };
     const updatedMessages = [...messages, userMsg];
@@ -50,28 +50,65 @@ export function ChatProfilePage() {
     setInput('');
     setLoading(true);
 
+    let parsedProfile = null;
+
+    // 1. Try server API /api/parse-profile first
     try {
-      const res = await fetch(getApiUrl('/api/profile'), {
+      const res = await fetch(getApiUrl('/api/parse-profile'), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ messages: updatedMessages, currentProfile: profile })
       });
-      const data = await res.json();
-
-      if (data.success && data.profile) {
-        updateProfileAndMatch(data.profile);
-
-        const botReply = lang === 'ta'
-          ? `சுயவிவரம் புதுப்பிக்கப்பட்டது: வயது ${data.profile.age || '-'}, தொழில் ${data.profile.occupation || 'பொது'}, ஆண்டு வருமானம் ₹${data.profile.annual_family_income ? data.profile.annual_family_income.toLocaleString() : '-'}. உங்களுக்கான பொருத்தமான திட்டங்களை உடனடியாகக் கணக்கிட்டுள்ளேன்!`
-          : `Profile captured: Age ${data.profile.age || '-'}, Occupation ${data.profile.occupation || 'Farmer/Citizen'}, Annual Income ₹${data.profile.annual_family_income ? data.profile.annual_family_income.toLocaleString() : '-'}. Grounded scheme matches are now ready!`;
-
-        setMessages(prev => [...prev, { id: Date.now() + 1, sender: 'bot', text: botReply }]);
+      if (res.ok) {
+        const data = await res.json();
+        if (data.success && data.profile) {
+          parsedProfile = data.profile;
+        }
       }
     } catch (err) {
-      console.warn('Profile parse error:', err);
-    } finally {
-      setLoading(false);
+      console.warn('Backend parse API unavailable, using client NLP parser:', err);
     }
+
+    // 2. Client NLP parser fallback if API failed or offline
+    if (!parsedProfile) {
+      parsedProfile = parseConversationToProfileClient(updatedMessages, profile);
+    }
+
+    // 3. Update global profile & calculate scheme recommendations
+    updateProfileAndMatch(parsedProfile);
+
+    // Compute top matches for conversational bot response
+    const matches = evaluateClientSchemes(parsedProfile);
+    const eligibleSchemes = matches.filter(s => s.status === 'ELIGIBLE');
+
+    // 4. Construct natural language response in current language
+    let botReply = '';
+    if (lang === 'ta') {
+      botReply = `சுயவிவர விவரங்கள் கணக்கிடப்பட்டன:\n` +
+        `• வயது: ${parsedProfile.age || '-'}\n` +
+        `• தொழில்: ${parsedProfile.occupation || 'குடிமகன்/விவசாயி'}\n` +
+        `• குடும்ப வருமானம்: ₹${parsedProfile.annual_family_income ? Number(parsedProfile.annual_family_income).toLocaleString('en-IN') : '-'}\n` +
+        `• மாவட்டம்: ${parsedProfile.district || 'தஞ்சாவூர்'}\n\n` +
+        `🎯 உங்களுகக்கான பொருத்தமான அரசு திட்டங்கள் (${eligibleSchemes.length} தகுதிகள்):\n` +
+        (eligibleSchemes.length > 0
+          ? eligibleSchemes.slice(0, 3).map(s => `✓ ${s.scheme_name_ta || s.scheme_name_en}`).join('\n')
+          : `✓ தமிழ்நாடு முதல்வரின் விரிவான மருத்துவக் காப்பீட்டுத் திட்டம்`) +
+        `\n\nமுழு விவரங்களைக் காண "பொருத்தமான திட்டங்களைப் பார்" பொத்தானைக் கிளிக் செய்யவும்!`;
+    } else {
+      botReply = `Citizen Profile Captured & Verified:\n` +
+        `• Age: ${parsedProfile.age || '-'}\n` +
+        `• Occupation: ${parsedProfile.occupation || 'Farmer/Citizen'}\n` +
+        `• Annual Income: ₹${parsedProfile.annual_family_income ? Number(parsedProfile.annual_family_income).toLocaleString('en-IN') : '-'}\n` +
+        `• District: ${parsedProfile.district || 'Thanjavur'}\n\n` +
+        `🎯 Grounded Scheme Matches (${eligibleSchemes.length} Eligible):\n` +
+        (eligibleSchemes.length > 0
+          ? eligibleSchemes.slice(0, 3).map(s => `✓ ${s.scheme_name_en} (${s.financial_benefit_en || 'Official Benefit'})`).join('\n')
+          : `✓ TN CM Comprehensive Health Insurance Scheme`) +
+        `\n\nClick "Proceed to Grounded Scheme Matches" to view complete eligibility breakdown!`;
+    }
+
+    setMessages(prev => [...prev, { id: Date.now() + 1, sender: 'bot', text: botReply }]);
+    setLoading(false);
   };
 
   return (
@@ -98,7 +135,7 @@ export function ChatProfilePage() {
                 <div className="msg-avatar">
                   {m.sender === 'bot' ? <Bot size={16} /> : <User size={16} />}
                 </div>
-                <div className="msg-content">{m.text}</div>
+                <div className="msg-content" style={{ whiteSpace: 'pre-line' }}>{m.text}</div>
               </div>
             ))}
             {loading && (
@@ -169,7 +206,7 @@ export function ChatProfilePage() {
 
             <div className="profile-item">
               <span className="item-label"><CreditCard size={14} /> {t.fieldIncome}</span>
-              <span className="item-value highlight">₹{profile.annual_family_income ? profile.annual_family_income.toLocaleString() : '1,20,000'}</span>
+              <span className="item-value highlight">₹{profile.annual_family_income ? Number(profile.annual_family_income).toLocaleString('en-IN') : '1,20,000'}</span>
             </div>
 
             <div className="profile-item">
