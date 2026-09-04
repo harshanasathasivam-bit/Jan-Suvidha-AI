@@ -7,8 +7,12 @@ export function AppProvider({ children }) {
   const [lang, setLang] = useState('en');
   const [activeTab, setActiveTab] = useState('landing');
   
+  // Auth state
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [currentUser, setCurrentUser] = useState(null);
+
   const [profile, setProfile] = useState({
-    age: 22,
+    age: 24,
     gender: 'female',
     state_domicile: 'tamil_nadu',
     annual_family_income: 120000,
@@ -17,7 +21,7 @@ export function AppProvider({ children }) {
     school_type_6_to_12: 'tn_govt_school',
     education_course_type: 'regular_higher_education',
     education_level: '12th_pass',
-    marital_status: 'single',
+    marital_status: 'married',
     district: 'Chennai'
   });
 
@@ -40,6 +44,21 @@ export function AppProvider({ children }) {
 
   const toggleLanguage = () => {
     setLang(prev => (prev === 'en' ? 'ta' : 'en'));
+  };
+
+  const loginUser = (userObj) => {
+    setCurrentUser(userObj);
+    setIsLoggedIn(true);
+    if (userObj.profile) {
+      updateProfileAndMatch(userObj.profile);
+    }
+    setActiveTab('dashboard');
+  };
+
+  const logoutUser = () => {
+    setCurrentUser(null);
+    setIsLoggedIn(false);
+    setActiveTab('landing');
   };
 
   // Fetch grounded matches whenever profile updates
@@ -79,6 +98,10 @@ export function AppProvider({ children }) {
         t,
         activeTab,
         setActiveTab,
+        isLoggedIn,
+        currentUser,
+        loginUser,
+        logoutUser,
         profile,
         setProfile,
         updateProfileAndMatch,

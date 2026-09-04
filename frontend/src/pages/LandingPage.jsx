@@ -1,9 +1,9 @@
 import React from 'react';
 import { useApp } from '../context/AppContext';
-import { ShieldCheck, ArrowRight, Award, FileSearch, Sparkles, CheckCircle } from 'lucide-react';
+import { ShieldCheck, ArrowRight, Award, LogIn, Sparkles, LayoutDashboard } from 'lucide-react';
 
 export function LandingPage() {
-  const { t, setActiveTab } = useApp();
+  const { t, setActiveTab, isLoggedIn } = useApp();
 
   return (
     <div className="hero-section">
@@ -25,9 +25,17 @@ export function LandingPage() {
           <ArrowRight size={18} />
         </button>
 
-        <button className="btn-secondary" onClick={() => setActiveTab('results')}>
-          <span>{t.exploreSchemesBtn}</span>
-        </button>
+        {isLoggedIn ? (
+          <button className="btn-secondary" style={{ background: 'rgba(5, 150, 105, 0.2)', borderColor: 'rgba(5, 150, 105, 0.4)', color: '#34d399' }} onClick={() => setActiveTab('dashboard')}>
+            <LayoutDashboard size={18} />
+            <span>{t.navDashboard}</span>
+          </button>
+        ) : (
+          <button className="btn-secondary" style={{ background: 'rgba(37, 99, 235, 0.15)', borderColor: 'rgba(37, 99, 235, 0.3)', color: '#60a5fa' }} onClick={() => setActiveTab('login')}>
+            <LogIn size={18} />
+            <span>{t.loginHeroBtn}</span>
+          </button>
+        )}
       </div>
 
       <div className="stats-grid">

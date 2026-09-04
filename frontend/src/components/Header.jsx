@@ -1,11 +1,11 @@
 import React from 'react';
 import { useApp } from '../context/AppContext';
-import { Globe, ShieldCheck, Home, MessageSquare, Award, FileText, CheckCircle2 } from 'lucide-react';
+import { Globe, User, LogIn, LayoutDashboard, ShieldCheck, Home } from 'lucide-react';
 
 export function Header() {
-  const { lang, toggleLanguage, t, activeTab, setActiveTab, schemeMatches } = useApp();
+  const { lang, toggleLanguage, t, activeTab, setActiveTab, isLoggedIn, currentUser, logoutUser, schemeMatches } = useApp();
 
-  const eligibleCount = schemeMatches.filter(s => s.status === 'ELIGIBLE').length;
+  const eligibleCount = schemeMatches.filter(s => s.status === 'ELIGIBLE' || s.status === 'PARTIALLY_ELIGIBLE').length;
 
   return (
     <header className="header">
@@ -24,12 +24,34 @@ export function Header() {
               <Globe size={16} />
               <span>{lang === 'en' ? 'தமிழ்' : 'English'}</span>
             </button>
+
+            {isLoggedIn ? (
+              <button className="lang-btn" style={{ background: 'rgba(5, 150, 105, 0.2)', borderColor: 'rgba(5, 150, 105, 0.4)', color: '#34d399' }} onClick={() => setActiveTab('dashboard')}>
+                <LayoutDashboard size={16} />
+                <span>{t.navDashboard} ({currentUser?.name?.split(' ')[0] || 'User'})</span>
+              </button>
+            ) : (
+              <button className="lang-btn" style={{ background: 'rgba(37, 99, 235, 0.2)', borderColor: 'rgba(37, 99, 235, 0.4)', color: '#60a5fa' }} onClick={() => setActiveTab('login')}>
+                <LogIn size={16} />
+                <span>{t.navLogin}</span>
+              </button>
+            )}
           </div>
         </div>
       </div>
 
-      {activeTab !== 'landing' && (
+      {activeTab !== 'landing' && activeTab !== 'login' && (
         <div className="stepper-bar">
+          {isLoggedIn && (
+            <div 
+              className={`step-item ${activeTab === 'dashboard' ? 'active' : ''}`}
+              onClick={() => setActiveTab('dashboard')}
+            >
+              <span className="step-num">★</span>
+              <span>{t.navDashboard}</span>
+            </div>
+          )}
+
           <div 
             className={`step-item ${activeTab === 'chat' ? 'active' : ''}`}
             onClick={() => setActiveTab('chat')}

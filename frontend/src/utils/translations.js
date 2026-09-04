@@ -7,12 +7,16 @@ export const translations = {
     navResults: "Eligible Schemes",
     navDocs: "Document Verification",
     navChecklist: "Final Dossier",
+    navLogin: "Login / Sign In",
+    navDashboard: "My Dashboard",
+    navLogout: "Logout",
     
     heroBadge: "Grounded AI Welfare Matcher • Tamil Nadu State Schemes",
     heroTitle: "Find Government Schemes You Are Eligible For in Minutes",
     heroDesc: "Jan Suvidha AI helps citizens of Tamil Nadu discover social welfare schemes, evaluate grounded eligibility against real government rules, verify application documents, and prepare ready-to-submit application dossiers.",
     startBtn: "Check My Eligibility Now",
     exploreSchemesBtn: "Explore 5 Seed Schemes",
+    loginHeroBtn: "Citizen Login / Portal Dashboard",
     
     stat1Val: "5 Verified",
     stat1Label: "Real TN Welfare Schemes",
@@ -21,6 +25,39 @@ export const translations = {
     stat3Val: "Instant OCR",
     stat3Label: "Document Health Check",
     
+    // Login Screen
+    loginTitle: "Citizen Login Portal",
+    loginSubtitle: "Access your personalized Tamil Nadu welfare dashboard using your Aadhaar or Mobile Number",
+    loginTabMobile: "Mobile OTP / Aadhaar",
+    loginTabDemo: "Quick Demo Login",
+    phoneLabel: "Mobile Number / Aadhaar Number",
+    phonePlaceholder: "Enter 10-digit mobile or 12-digit Aadhaar",
+    sendOtpBtn: "Send OTP Verification",
+    otpLabel: "Enter 4-Digit OTP",
+    otpPlaceholder: "e.g. 1234",
+    verifyLoginBtn: "Verify & Enter Dashboard",
+    demoUser1: "👩 Lakshmi Devi (24 yr, Chennai - Family Head)",
+    demoUser2: "🎓 Priya S. (20 yr, Madurai - Govt School Student)",
+    demoUser3: "👵 Meenakshi M. (58 yr, Coimbatore - BPL Card)",
+    demoLoginNotice: "Click any demo profile above for instant login",
+
+    // Dashboard Screen
+    dashWelcome: "Welcome back,",
+    dashSub: "Tamil Nadu Citizen Welfare Portal Dashboard",
+    dashProfileTitle: "Citizen Digital Identity & Profile",
+    dashStatusVerified: "Aadhaar Verified",
+    dashAadhaarNum: "Aadhaar No: XXXX-XXXX-4892",
+    dashRationNum: "Ration Card: 03/G/0491823",
+    dashIncomeStatus: "Annual Income: ₹1,20,000 (Low Income Certified)",
+    
+    dashActionCheckSchemes: "Check Scheme Eligibility",
+    dashActionUploadDocs: "Verify Documents",
+    dashActionViewDossier: "Print Application Dossier",
+    
+    dashApplicationsTitle: "My Scheme Applications & Match Status",
+    dashSavedDocsTitle: "Verified Document Vault",
+    dashUpdatesTitle: "2026 Welfare Policy Notifications",
+
     chatTitle: "AI Citizen Assistant",
     chatSubtitle: "Speak or type in Tamil or English to build your profile",
     typePlaceholder: "Type e.g., 'I am a 22 year old female student from Chennai'...",
@@ -76,12 +113,16 @@ export const translations = {
     navResults: "தகுதியான திட்டங்கள்",
     navDocs: "ஆவணச் சரிபார்ப்பு",
     navChecklist: "இறுதிப் பட்டியல்",
+    navLogin: "உள்நுழைவு",
+    navDashboard: "என் டாஷ்போர்டு",
+    navLogout: "வெளியேறு",
 
     heroBadge: "தமிழ்நாடு அரசு நலத்திட்ட வழிகாட்டி",
     heroTitle: "உங்களுக்குத் தகுதியான அரசு நலத்திட்டங்களை நிமிடங்களில் கண்டறியுங்கள்",
     heroDesc: "ஜன் சுவிதா AI தமிழ்நாட்டு மக்களுக்குத் தகுதியான நலத்திட்டங்களை அடையாளம் காணவும், அதிகாரப்பூர்வ விதிகளைச் சரிபார்க்கவும், ஆவணங்களின் தெளிவை ஆய்வு செய்யவும் உதவுகிறது.",
     startBtn: "எனது தகுதியைச் சரிபார்க்கவும்",
     exploreSchemesBtn: "5 திட்டங்களை அறிய",
+    loginHeroBtn: "குடிமகன் உள்நுழைவு / டாஷ்போர்டு",
 
     stat1Val: "5 திட்டங்கள்",
     stat1Label: "உறுதிசெய்யப்பட்ட திட்டங்கள்",
@@ -89,6 +130,39 @@ export const translations = {
     stat2Label: "அரசு விதிகள் அடிப்படையில்",
     stat3Val: "உடனடி OCR",
     stat3Label: "ஆவணத் தர ஆய்வு",
+
+    // Login Screen
+    loginTitle: "குடிமக்கள் உள்நுழைவு தளம்",
+    loginSubtitle: "உங்கள் ஆதார் அல்லது மொபைல் எண்ணைப் பயன்படுத்தி தனிப்பயனாக்கப்பட்ட டாஷ்போர்டை அணுகவும்",
+    loginTabMobile: "மொபைல் OTP / ஆதார்",
+    loginTabDemo: "உடனடி மாதிரி உள்நுழைவு",
+    phoneLabel: "மொபைல் எண் / ஆதார் எண்",
+    phonePlaceholder: "10 இலக்க மொபைல் அல்லது 12 இலக்க ஆதார் எண்",
+    sendOtpBtn: "OTP அனுப்புக",
+    otpLabel: "4 இலக்க OTP ஐ உள்ளிடவும்",
+    otpPlaceholder: "எ.கா: 1234",
+    verifyLoginBtn: "சரிபார்த்து உள்நுழைக",
+    demoUser1: "👩 லட்சுமி தேவி (24 வயது, சென்னை - குடும்பத் தலைவி)",
+    demoUser2: "🎓 ப்ரியா எஸ். (20 வயது, மதுரை - அரசுப் பள்ளி மாணவி)",
+    demoUser3: "👵 மீனாட்சி எம். (58 வயது, கோயம்புத்தூர் - BPL அட்டை)",
+    demoLoginNotice: "உடனடி உள்நுழைவுக்கு ஏதேனும் ஒரு சுயவிவரத்தைக் கிளிக் செய்யவும்",
+
+    // Dashboard Screen
+    dashWelcome: "நல்வரவு,",
+    dashSub: "தமிழ்நாடு குடிமக்கள் நலத்திட்ட டாஷ்போர்டு",
+    dashProfileTitle: "குடிமகன் டிஜிட்டல் அடையாளம்",
+    dashStatusVerified: "ஆதார் உறுதிசெய்யப்பட்டது",
+    dashAadhaarNum: "ஆதார் எண்: XXXX-XXXX-4892",
+    dashRationNum: "குடும்ப அட்டை: 03/G/0491823",
+    dashIncomeStatus: "ஆண்டு வருமானம்: ₹1,20,000 (சான்றளிக்கப்பட்டது)",
+
+    dashActionCheckSchemes: "தகுதியைச் சரிபார்க்க",
+    dashActionUploadDocs: "ஆவணங்களை ஆய்வு செய்ய",
+    dashActionViewDossier: "அறிக்கையை அச்சிட",
+
+    dashApplicationsTitle: "எனது விண்ணப்பங்கள் மற்றும் தகுதி நிலை",
+    dashSavedDocsTitle: "சரிபார்க்கப்பட்ட ஆவணப் பேழை",
+    dashUpdatesTitle: "2026 அரசு அறிவிப்புகள்",
 
     chatTitle: "AI குடிமக்கள் உதவியாளர்",
     chatSubtitle: "தமிழ் அல்லது ஆங்கிலத்தில் பேசியோ தட்டச்சு செய்தோ உங்கள் விவரங்களைப் பகிரவும்",
